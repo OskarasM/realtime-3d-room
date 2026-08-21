@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+.env
+.env.local
+.env.*.local
+*.local
+.vercel
+.DS_Store
+npm-debug.log*
+coverage
