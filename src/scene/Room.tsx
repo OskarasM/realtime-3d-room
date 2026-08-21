@@ -23,10 +23,10 @@ export function Room() {
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       // Lets R3F drop resolution rather than frames if the device struggles.
       performance={{ min: 0.5 }}
-      camera={{ position: [0, 13, 15], fov: 45, near: 0.1, far: 120 }}
+      camera={{ position: [0, 9, 11], fov: 46, near: 0.1, far: 90 }}
     >
       <color attach="background" args={['#0b0f14']} />
-      <fog attach="fog" args={['#0b0f14', 26, 62]} />
+      <fog attach="fog" args={['#0b0f14', 16, 42]} />
 
       {/* No shadow maps anywhere. See Avatar for what stands in for them. */}
       <ambientLight intensity={0.75} />
@@ -47,8 +47,8 @@ export function Room() {
       <OrbitControls
         target={[0, 0.6, 0]}
         enablePan={false}
-        minDistance={8}
-        maxDistance={28}
+        minDistance={6}
+        maxDistance={20}
         minPolarAngle={0.35}
         maxPolarAngle={1.35}
         // Keeping the camera roughly behind the room means W stays "away from

@@ -2,7 +2,7 @@ import { Grid } from '@react-three/drei'
 import type { ThreeEvent } from '@react-three/fiber'
 import { ROOM_HALF } from '../net/protocol'
 
-const WALL_H = 1.4
+const WALL_H = 1.6
 const WALL_T = 0.25
 
 /**
@@ -35,7 +35,7 @@ export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
         sectionSize={3}
         sectionThickness={1.1}
         sectionColor="#3d5a72"
-        fadeDistance={44}
+        fadeDistance={30}
         fadeStrength={1}
         infiniteGrid={false}
       />
@@ -50,7 +50,7 @@ export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
       ).map(([x, z, w, d], i) => (
         <mesh key={i} position={[x, WALL_H / 2, z]}>
           <boxGeometry args={[w, WALL_H, d]} />
-          <meshStandardMaterial color="#1e2833" roughness={0.85} />
+          <meshStandardMaterial color="#2b3a4d" roughness={0.7} />
         </mesh>
       ))}
     </group>

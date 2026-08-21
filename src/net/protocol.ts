@@ -63,5 +63,12 @@ export type PresenceMeta = {
 export const CHANNEL = 'room:lobby'
 export const MOVE_EVENT = 'move'
 
-/** Half-width of the walkable floor, in world units. */
-export const ROOM_HALF = 9
+/**
+ * Half-width of the walkable floor, in world units.
+ *
+ * Deliberately small. An avatar is about 1.2 units tall, so a room much bigger
+ * than this renders everyone as specks on an empty plain and the space stops
+ * reading as a room. Eight people need somewhere to bump into each other, not
+ * a car park.
+ */
+export const ROOM_HALF = 6
