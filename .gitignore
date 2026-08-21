@@ -9,3 +9,6 @@ dist-ssr
 .DS_Store
 npm-debug.log*
 coverage
+
+.vercel
+.env*
