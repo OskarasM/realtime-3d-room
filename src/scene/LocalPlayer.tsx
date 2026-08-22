@@ -4,13 +4,12 @@ import type { Group } from 'three'
 import { Avatar } from './Avatar'
 import { useKeyboard } from './useKeyboard'
 import { localPose } from '../net/motion'
-import { ROOM_HALF } from '../net/protocol'
+import { clampPosition } from '../net/protocol'
 import { lerpAngle } from '../net/interpolation'
 
 const SPEED = 4.2 // world units per second
 const TURN_RATE = 12 // how fast the avatar swings round to face travel
 const ARRIVE = 0.12
-const BOUND = ROOM_HALF - 0.6
 
 export type TapTarget = { x: number; z: number } | null
 
@@ -69,8 +68,8 @@ export function LocalPlayer({
     }
 
     if (dx !== 0 || dz !== 0) {
-      g.position.x = clamp(g.position.x + dx * SPEED * delta)
-      g.position.z = clamp(g.position.z + dz * SPEED * delta)
+      g.position.x = clampPosition(g.position.x + dx * SPEED * delta)
+      g.position.z = clampPosition(g.position.z + dz * SPEED * delta)
       // Face where you are going. atan2(x, z) because forward is +Z.
       const want = Math.atan2(dx, dz)
       g.rotation.y = lerpAngle(g.rotation.y, want, Math.min(1, TURN_RATE * delta))
@@ -94,8 +93,4 @@ export function LocalPlayer({
       </mesh>
     </group>
   )
-}
-
-function clamp(v: number): number {
-  return Math.max(-BOUND, Math.min(BOUND, v))
 }

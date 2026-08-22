@@ -8,6 +8,8 @@ export type Stats = {
   out: number
   /** Broadcasts we received in the last second, from everybody. */
   in: number
+  /** Inbound packets refused by parseMove in the last second. */
+  bad: number
   fps: number
 }
 
@@ -34,7 +36,7 @@ export const useRoomStore = create<RoomState>((set) => ({
   me: null,
   roster: {},
   smoothing: true,
-  stats: { out: 0, in: 0, fps: 0 },
+  stats: { out: 0, in: 0, bad: 0, fps: 0 },
 
   setStatus: (status, error = null) => set({ status, error }),
   setMe: (me) => set({ me }),

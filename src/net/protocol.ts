@@ -72,3 +72,59 @@ export const MOVE_EVENT = 'move'
  * a car park.
  */
 export const ROOM_HALF = 6
+
+/**
+ * How far from the centre a player can stand: the wall, less the avatar's
+ * radius. One definition, used by the local clamp and the remote one, because
+ * two copies of a bound drift apart and the second one is always the one
+ * nobody tested.
+ */
+export const WALK_LIMIT = ROOM_HALF - 0.6
+
+export function clampPosition(v: number): number {
+  return Math.max(-WALK_LIMIT, Math.min(WALK_LIMIT, v))
+}
+
+/** Fold any angle into (-PI, PI], so a remote value cannot spin unboundedly. */
+export function wrapAngle(r: number): number {
+  // Returned untouched when it is already in range, because the modulo below
+  // is not exact: it comes back off by a float ulp and every ordinary packet
+  // would arrive very slightly rotated.
+  if (r > -Math.PI && r <= Math.PI) return r
+  const twoPi = Math.PI * 2
+  const wrapped = ((r + Math.PI) % twoPi + twoPi) % twoPi
+  return wrapped - Math.PI
+}
+
+/**
+ * Read one inbound broadcast, or refuse it.
+ *
+ * Everything arriving on this channel comes from another browser holding the
+ * same publishable key, so it is untrusted by construction: a hostile client
+ * can send any JSON it likes and a buggy one can send NaN. Either goes
+ * straight into a Three.js transform, and NaN is the expensive one, because it
+ * survives every interpolation it touches afterwards. Once a position is NaN
+ * the avatar is gone until the page reloads.
+ *
+ * This is the only place remote packets enter the app, which is why the check
+ * lives here rather than in the handler that happens to have the bug today.
+ */
+export function parseMove(input: unknown): MovePayload | null {
+  if (typeof input !== 'object' || input === null) return null
+
+  const { id, x, z, ry } = input as Record<string, unknown>
+  // Supabase user ids are UUIDs; the ceiling is only here so a megabyte of
+  // string cannot become a Map key we then keep a snapshot buffer under.
+  if (typeof id !== 'string' || id.length === 0 || id.length > 64) return null
+  if (!Number.isFinite(x) || !Number.isFinite(z) || !Number.isFinite(ry)) return null
+
+  // Clamped rather than rejected. Someone walking out through a wall is a
+  // client bug worth drawing at the wall; only unrepresentable numbers are
+  // worth dropping the packet for.
+  return {
+    id,
+    x: clampPosition(x as number),
+    z: clampPosition(z as number),
+    ry: wrapAngle(ry as number),
+  }
+}

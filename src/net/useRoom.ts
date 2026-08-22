@@ -8,6 +8,7 @@ import {
   CHANNEL,
   MOVE_EVENT,
   POSITION_EPSILON,
+  parseMove,
   ROOM_CAPACITY,
   SEND_INTERVAL_MS,
   type MovePayload,
@@ -47,7 +48,7 @@ export function useRoom(): void {
     let statsTimer: ReturnType<typeof setInterval> | null = null
     let cancelled = false
 
-    const counters = { out: 0, in: 0 }
+    const counters = { out: 0, in: 0, bad: 0 }
     const lastSent = { x: NaN, z: NaN, ry: NaN, at: 0 }
 
     async function connect() {
@@ -90,8 +91,15 @@ export function useRoom(): void {
           forgetPlayer(key)
         })
         .on('broadcast', { event: MOVE_EVENT }, ({ payload }) => {
-          const move = payload as MovePayload
-          if (!move || move.id === me.id) return
+          const move = parseMove(payload)
+          // Refused packets are counted separately. A client sending rubbish
+          // should show up as a number on the HUD rather than as an avatar
+          // that silently stopped moving.
+          if (!move) {
+            counters.bad++
+            return
+          }
+          if (move.id === me.id) return
           counters.in++
           bufferFor(move.id).push({
             x: move.x,
@@ -122,6 +130,7 @@ export function useRoom(): void {
         useRoomStore.getState().setStats({ ...counters })
         counters.out = 0
         counters.in = 0
+        counters.bad = 0
       }, 1000)
     }
 

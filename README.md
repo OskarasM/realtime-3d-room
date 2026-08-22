@@ -368,6 +368,18 @@ This is a presence demo, not a game engine. Cut on purpose:
 - **No reconciliation, prediction or rollback.** Your own movement is local and
   immediate; everyone else is a replay. That asymmetry is the whole trick and it
   is why none of the hard netcode is here.
+- **No server-side room cap.** The eight-person limit is enforced by each client
+  untracking itself, which means it is courtesy rather than a control. A scripted
+  client can ignore it entirely and keep broadcasting, and enough of those would
+  push the project past the free plan's 100 messages a second and start getting
+  everyone disconnected. Enforcing it properly needs Realtime Authorisation with
+  an RLS policy on `realtime.messages`, so the server refuses the join rather
+  than the client declining it.
+- **No validation of what a remote client claims about itself.** Inbound
+  positions are checked for shape and finiteness and clamped to the room in
+  [`parseMove`](src/net/protocol.ts), which is enough to stop a bad packet
+  removing an avatar permanently. It is not enough to stop someone teleporting:
+  that needs a server that knows where you were last tick.
 - **No accounts, chat, or uploaded avatars.** Name and colour are derived from
   your anonymous user id.
 - **No private channels.** The room is public. Locking one down means Realtime
