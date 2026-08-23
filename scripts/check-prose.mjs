@@ -51,7 +51,10 @@ for await (const file of walk('.')) {
     if (NON_ASCII_PUNCTUATION.test(line)) {
       problems.push(`${file}:${i + 1}: non-ASCII dash or quote: ${line.trim().slice(0, 80)}`)
     }
-    const american = line.match(AMERICAN)
+    // A method call is an API name, not prose. `.analyze()` from axe-core and
+    // `.normalize()` from path are spelled the way their authors spelled them,
+    // and a check that fires on those gets switched off inside a week.
+    const american = line.replace(/\.\w+/g, '').match(AMERICAN)
     if (american) {
       problems.push(`${file}:${i + 1}: American spelling "${american[0]}": ${line.trim().slice(0, 80)}`)
     }
