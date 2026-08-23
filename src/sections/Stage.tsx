@@ -4,9 +4,9 @@ import { WEBGL_AVAILABLE } from '../scene/webgl'
 import { Hud } from '../ui/Hud'
 import { Guestbook } from '../ui/Guestbook'
 import { Overlay } from '../ui/Overlay'
+import { Controls } from '../ui/Controls'
 import { ArrowIcon, SiteHeader } from '../chrome'
 import { useRoomStore } from '../state/useRoomStore'
-import { RENDER_DELAY_MS, TICK_HZ } from '../net/protocol'
 import { BRAND, NAV, REPO_URL } from '../site'
 
 /**
@@ -54,6 +54,7 @@ export function Stage() {
           <Guestbook />
         </div>
 
+        <Controls />
         <Overlay />
       </div>
 
@@ -82,34 +83,23 @@ function Hero() {
 
   return (
     <div className="hero">
-      <p className="eyebrow">
-        <span>live</span> a shared 3D room, and the measurements behind it
-      </p>
-
-      <h1 id="stage-title">
-        Eight people, ten packets a second. Everyone else is drawn{' '}
-        <em className="voice" style={{ fontStretch: `${Math.round(width)}%` }}>
-          120&nbsp;ms
-        </em>{' '}
-        in the past.
-      </h1>
-
-      <div className="hero-foot">
-        <p className="hero-note">
-          Move with WASD or the arrow keys, tap the floor on a phone, drag to look around. Open this
-          page in a second window and the two of you are in the same room.
+      <div className="hero-text">
+        <p className="eyebrow">
+          <span>live</span> a shared 3D room, and the measurements behind it
         </p>
 
-        <p className="hero-readout" role="status">
-          {gapMs === 0
-            ? `Nobody else is moving yet, so there is nothing to measure. The room sends ${TICK_HZ} updates a second and draws everyone else ${RENDER_DELAY_MS} ms late.`
-            : `Packets from one sender are landing ${gapMs} ms apart. The width of the figure above is set from that.`}
-        </p>
-
-        <a className="scroll-cue" href="#pipeline">
-          Why 120 ms <ArrowIcon />
-        </a>
+        <h1 id="stage-title">
+          Eight people, ten packets a second. Everyone else is drawn{' '}
+          <em className="voice" style={{ fontStretch: `${Math.round(width)}%` }}>
+            120&nbsp;ms
+          </em>{' '}
+          in the past.
+        </h1>
       </div>
+
+      <a className="scroll-cue" href="#pipeline">
+        Why 120 ms <ArrowIcon />
+      </a>
     </div>
   )
 }

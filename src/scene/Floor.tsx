@@ -13,17 +13,37 @@ const WALL_T = 0.25
  * gets a move target from one pointer event on a mesh that had to exist anyway,
  * which beats building a joystick nobody asked for.
  */
-export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
+export function Floor({
+  onTap,
+  onHover,
+}: {
+  onTap: (x: number, z: number) => void
+  onHover: (x: number, z: number, over: boolean) => void
+}) {
   const handle = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     onTap(e.point.x, e.point.z)
   }
 
+  // Reported into a ref rather than React state. A pointer move fires far more
+  // often than a frame does, and re-rendering the scene graph on each one would
+  // spend the entire frame budget telling React about a cursor.
+  const move = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation()
+    onHover(e.point.x, e.point.z, true)
+  }
+
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} onPointerDown={handle}>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0, 0]}
+        onPointerDown={handle}
+        onPointerMove={move}
+        onPointerOut={() => onHover(0, 0, false)}
+      >
         <planeGeometry args={[ROOM_HALF * 2, ROOM_HALF * 2]} />
-        <meshStandardMaterial color="#121b26" roughness={0.95} metalness={0} />
+        <meshStandardMaterial color="#16202c" roughness={0.95} metalness={0} />
       </mesh>
 
       <Grid
@@ -31,10 +51,10 @@ export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
         position={[0, 0.005, 0]}
         cellSize={1}
         cellThickness={0.6}
-        cellColor="#263646"
+        cellColor="#2d4054"
         sectionSize={3}
         sectionThickness={1.1}
-        sectionColor="#3c6472"
+        sectionColor="#4a7d90"
         fadeDistance={30}
         fadeStrength={1}
         infiniteGrid={false}
@@ -50,7 +70,7 @@ export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
       ).map(([x, z, w, d], i) => (
         <mesh key={i} position={[x, WALL_H / 2, z]}>
           <boxGeometry args={[w, WALL_H, d]} />
-          <meshStandardMaterial color="#1b2733" roughness={0.7} />
+          <meshStandardMaterial color="#202e3c" roughness={0.7} />
         </mesh>
       ))}
     </group>

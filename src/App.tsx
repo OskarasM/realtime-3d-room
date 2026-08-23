@@ -8,6 +8,7 @@ import { Interpolation } from './sections/Interpolation'
 import { Policy } from './sections/Policy'
 import { Run } from './sections/Run'
 import { Limits } from './sections/Limits'
+import { CtaBand } from './ui/Cta'
 import { BRAND, SIBLING_SITES } from './site'
 
 /**
@@ -34,6 +35,7 @@ export default function App() {
         <Policy />
         <Run />
         <Limits />
+        <CtaBand />
       </main>
 
       <SiteFooter

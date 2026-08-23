@@ -29,9 +29,14 @@ const STEPS = [
   {
     at: '4',
     title: 'Run the migration',
-    body: 'Paste supabase/migrations/0001_guestbook.sql into the SQL editor, or run supabase db push.',
+    body: (
+      <>
+        Paste <code>supabase/migrations/0001_guestbook.sql</code> into the SQL editor, or run{' '}
+        <code>supabase db push</code>.
+      </>
+    ),
   },
-] as const
+]
 
 export function Run() {
   return (
@@ -66,16 +71,16 @@ export function Run() {
           <InstallCommand command="npm install && npm run dev" id="dev-command" />
           <InstallCommand command="npm run spike" id="spike-command" />
           <InstallCommand command="npm run record" id="record-command" />
-
-          <p className="panel-note">
-            <code>npm run spike</code> measures round trip time, the send rate ceiling, the presence
-            allowance and a full room of eight clients, and prints a markdown block that goes
-            straight into the README. <code>npm run record</code> writes the two recordings this
-            page replays. Both send a lot of messages on purpose, so point them at a project you do
-            not mind rate limiting.
-          </p>
         </div>
       </div>
+
+      <p className="run-note">
+        <code>npm run spike</code> measures round trip time, the send rate ceiling, the presence
+        allowance and a full room of eight clients, and prints a markdown block that goes straight
+        into the README. <code>npm run record</code> writes the two recordings this page replays.
+        Both send a lot of messages on purpose, so point them at a project you do not mind rate
+        limiting.
+      </p>
 
       <CodeCard filename=".env" status="both values are public">
         {ENV}

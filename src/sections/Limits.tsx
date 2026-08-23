@@ -1,6 +1,5 @@
 import { Band } from '../ui/Band'
 import { ROOM_CAPACITY, TICK_HZ } from '../net/protocol'
-import { SOURCE } from '../site'
 
 const LIMITS = [
   {
@@ -51,23 +50,6 @@ export function Limits() {
         ))}
       </div>
 
-      <div className="npm-note">
-        <h3>This one is not on npm, and should not be</h3>
-        <p>
-          Its two siblings are libraries and both publish to npm. This is an application, and it has
-          no importable surface: there is no component you could mount in your own project without
-          also adopting a Supabase channel, a Zustand store and a room. Publishing it would be
-          publishing a folder.
-        </p>
-        <p>
-          The two parts that are genuinely reusable are{' '}
-          <a href={SOURCE('src/net/interpolation.ts')}>src/net/interpolation.ts</a>, which is the
-          snapshot buffer, and <a href={SOURCE('spike/rate-probe.ts')}>spike/rate-probe.ts</a>, which
-          is the measurement harness. Between them they are about two hundred lines, and they are
-          two hundred lines you should read and adapt rather than depend on. A dependency you would
-          have to read anyway is worse than a file you copied and understood.
-        </p>
-      </div>
     </Band>
   )
 }

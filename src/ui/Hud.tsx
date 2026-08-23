@@ -49,8 +49,8 @@ export function Hud() {
         </button>
         <p className="panel-note">
           {smoothing
-            ? `Everyone else is drawn ${RENDER_DELAY_MS} ms in the past, between the two packets either side of that moment.`
-            : `Raw packets, no smoothing. This is what ${TICK_HZ} updates a second actually looks like.`}
+            ? `Others drawn ${RENDER_DELAY_MS} ms in the past.`
+            : `Raw packets. This is what ${TICK_HZ} a second looks like.`}
         </p>
       </div>
 

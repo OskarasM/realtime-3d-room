@@ -250,6 +250,56 @@ test('the two policy attacks are offered and answered on the page', async ({ pag
   await expect(page.getByRole('button', { name: /try the update/i })).toBeEnabled()
 })
 
+/* The controls used to be a sentence under the canvas, which is the one place
+   nobody looks while deciding whether the black rectangle above it does
+   anything. */
+test('the room says how to use it, on the room', async ({ page }) => {
+  await page.goto('/')
+
+  const strip = page.locator('.controls-strip')
+  await expect(strip).toBeVisible()
+  await expect(strip.getByText('W', { exact: true })).toBeVisible()
+  await expect(strip.getByRole('button', { name: /open a second window/i })).toBeVisible()
+
+  // The strip has to sit on the page's own left margin, like everything else.
+  // Both instrument panels were inset from the canvas edge instead, which put
+  // them a few pixels off every other vertical line on the page.
+  const edges = await page.evaluate(() =>
+    ['.site-header', '.hud', '.controls-strip', '.hero h1'].map(
+      (selector) => Math.round(document.querySelector(selector)!.getBoundingClientRect().left),
+    ),
+  )
+  expect(new Set(edges).size, `left edges disagree: ${edges.join(', ')}`).toBe(1)
+})
+
+test('the stage fits the viewport and the readout is not clipped', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 720 })
+  await page.goto('/')
+  await page.evaluate(() => document.fonts.ready)
+
+  const fits = await page.evaluate(() => {
+    const stage = document.querySelector('.stage')!.getBoundingClientRect()
+    const hud = document.querySelector('.hud')!
+    return {
+      overflows: stage.bottom > window.innerHeight + 1,
+      hudClipped: hud.scrollHeight > hud.clientHeight + 1,
+    }
+  })
+
+  expect(fits.overflows, 'the stage runs past the fold').toBe(false)
+  expect(fits.hudClipped, 'the readout is cut off').toBe(false)
+})
+
+test('the page ends on a call to action', async ({ page }) => {
+  await page.goto('/')
+  const cta = page.locator('.cta')
+  await expect(cta.getByRole('heading', { level: 2 })).toBeVisible()
+  await expect(cta.getByRole('link', { name: /read the full guide/i })).toHaveAttribute(
+    'href',
+    /github\.com/,
+  )
+})
+
 test('the footer links to both sibling projects', async ({ page }) => {
   await page.goto('/')
   const footer = page.locator('.site-footer')
