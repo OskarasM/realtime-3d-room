@@ -1,0 +1,47 @@
+name: Bug report
+description: Report incorrect networking, scene or site behaviour
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing: the eight-person cap, client-trusted positions and the
+        public channel are deliberate and documented in SECURITY.md.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: What you did, in order. Say whether a second window was open.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - The room itself, movement or other players
+        - Presence, connection or the room cap
+        - The guestbook or its policies
+        - The site below the canvas
+        - The spike or recording scripts
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, operating system and GPU
+      description: The GPU renderer matters whenever the scene is involved.
+    validations:
+      required: true
+  - type: input
+    id: supabase
+    attributes:
+      label: Your own project, or the deployed site
+      description: If your own, say which region and whether anonymous sign-ins are on.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
