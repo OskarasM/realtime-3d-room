@@ -5,15 +5,6 @@ on:
     branches: [main]
   pull_request:
 
-env:
-  # The build needs the variables to exist, not to be real. Nothing in CI talks
-  # to Supabase, and no secret belongs in a client bundle anyway. Running the
-  # browser tests against a deliberately unconfigured build is the point: that
-  # is the state the deployed site is in whenever the free project is paused,
-  # and every section has to read anyway.
-  VITE_SUPABASE_URL: https://example.supabase.co
-  VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
-
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -39,6 +30,11 @@ jobs:
 
       - run: npm run build
 
+  # Deliberately given no Supabase configuration. That is the state the deployed
+  # site is in whenever the free project is paused, and every section below the
+  # canvas has to read anyway, so it is the state worth testing. Pointing the
+  # client at a placeholder host instead made it attempt a real request to a
+  # domain that does not resolve, which WebKit reported as a page error.
   browser:
     runs-on: ubuntu-latest
     steps:

@@ -4,6 +4,34 @@ All notable changes are documented here. This is an application rather than a
 package, so there is nothing published to version. Dates are when the change
 reached `main`.
 
+## 2026-08-23, later
+
+### Added
+
+- A WebGL capability check in `src/scene/webgl.ts`. A browser that exposes the
+  API and then refuses a context, which is what a machine with hardware
+  acceleration switched off does, previously produced an uncaught Three.js error
+  and a black rectangle. It now gets a sentence saying what happened and that
+  the rest of the page does not need WebGL.
+
+### Fixed
+
+- The font assertion compared against `FontFace.family` directly. Firefox
+  reports that family with the quotes from the `@font-face` descriptor still
+  attached where Chromium and WebKit strip them, so a passing site failed in one
+  browser for no reason to do with fonts.
+- The skip link assertion required the first Tab to land on it. WebKit leaves
+  links out of the tab order until the reader turns on a preference that is off
+  by default, so the link is now proved reachable and functional everywhere and
+  first in the tab order where links participate in it.
+
+### Changed
+
+- Continuous integration no longer sets placeholder Supabase credentials. They
+  made the client attempt a request to a host that does not resolve, which
+  WebKit reported as a page error, and they contradicted the browser suite's own
+  premise: every assertion in it is written to hold with no project reachable.
+
 ## 2026-08-23
 
 ### Added

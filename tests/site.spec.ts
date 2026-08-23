@@ -32,6 +32,31 @@ test('@smoke the page loads and every section is present with or without a conne
   expect(errors).toEqual([])
 })
 
+/**
+ * The stage either draws or explains itself.
+ *
+ * Headless Firefox on a CI runner has no WebGL, which is the same position as a
+ * visitor whose work laptop has hardware acceleration switched off. Before this
+ * existed, that visitor got an uncaught THREE error and a black rectangle. One
+ * of these two branches has to be true in every browser.
+ */
+test('the stage shows the room, or says why it cannot', async ({ page }) => {
+  await page.goto('/')
+
+  const canvas = page.locator('.stage-canvas canvas')
+  const refused = page.getByRole('heading', { name: /will not give up a WebGL context/i })
+
+  if (await canvas.count()) {
+    await expect(canvas).toBeVisible()
+    await expect(refused).toHaveCount(0)
+  } else {
+    await expect(refused).toBeVisible()
+    // The point of the notice is that the rest of the page is still worth
+    // reading, so the rest of the page had better still be there.
+    await expect(page.locator('#interpolation')).toBeVisible()
+  }
+})
+
 test('has no serious WCAG 2 A or AA violations', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'The full accessibility scan runs in Chromium.')
 
@@ -44,11 +69,24 @@ test('has no serious WCAG 2 A or AA violations', async ({ page, browserName }) =
   expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([])
 })
 
-test('the skip link is the first thing a keyboard reaches and it works', async ({ page }) => {
+test('the skip link is the first thing a keyboard reaches and it works', async ({
+  page,
+  browserName,
+}) => {
   await page.goto('/')
-  await page.keyboard.press('Tab')
-
   const skip = page.getByRole('link', { name: /skip to main content/i })
+
+  // WebKit leaves links out of the tab order until the reader turns on "press
+  // Tab to highlight each item on a webpage", which is off by default and is a
+  // browser preference rather than anything this page decides. It lands on the
+  // first button instead. Everywhere else the very first Tab has to arrive
+  // here, and it is the first element in the document in all three.
+  if (browserName !== 'webkit') {
+    await page.keyboard.press('Tab')
+    await expect(skip).toBeFocused()
+  }
+
+  await skip.focus()
   await expect(skip).toBeFocused()
   await skip.press('Enter')
   await expect(page.locator('#main')).toBeInViewport()
@@ -74,10 +112,18 @@ test('the three faces are actually fetched and loaded, not just named', async ({
   const faces = await page.evaluate(() =>
     [...document.fonts].map((face) => ({ family: face.family, status: face.status })),
   )
+  // Firefox reports the family with the quotes from the @font-face descriptor
+  // still attached, so it answers "Anybody" where Chromium and WebKit answer
+  // Anybody. Strip them before comparing or this passes in two browsers and
+  // fails in the third for no reason to do with fonts.
   const loaded = (family: string) =>
-    faces.some((face) => face.family === family && face.status === 'loaded')
+    faces.some(
+      (face) => face.family.replace(/^["']|["']$/g, '') === family && face.status === 'loaded',
+    )
 
-  const present = faces.filter((f) => f.status === 'loaded').map((f) => f.family)
+  const present = faces
+    .filter((f) => f.status === 'loaded')
+    .map((f) => f.family.replace(/^["']|["']$/g, ''))
   expect(loaded('Anybody'), `display face missing. Present: ${present.join(', ')}`).toBe(true)
   expect(loaded('Commit Mono'), `chrome face missing. Present: ${present.join(', ')}`).toBe(true)
   expect(loaded('Atkinson Next'), `body face missing. Present: ${present.join(', ')}`).toBe(true)

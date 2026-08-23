@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Room } from '../scene/Room'
+import { WEBGL_AVAILABLE } from '../scene/webgl'
 import { Hud } from '../ui/Hud'
 import { Guestbook } from '../ui/Guestbook'
 import { Overlay } from '../ui/Overlay'
@@ -46,7 +47,7 @@ export function Stage() {
       </div>
 
       <div className="stage-canvas">
-        <Room frameloop={running ? 'always' : 'never'} />
+        {WEBGL_AVAILABLE ? <Room frameloop={running ? 'always' : 'never'} /> : null}
 
         <div className="stage-panels">
           <Hud />

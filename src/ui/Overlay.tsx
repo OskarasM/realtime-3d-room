@@ -1,5 +1,6 @@
 import { useRoomStore } from '../state/useRoomStore'
 import { ROOM_CAPACITY } from '../net/protocol'
+import { WEBGL_AVAILABLE } from '../scene/webgl'
 
 /**
  * Everything that can go wrong, said in English.
@@ -15,6 +16,28 @@ import { ROOM_CAPACITY } from '../net/protocol'
 export function Overlay() {
   const status = useRoomStore((s) => s.status)
   const error = useRoomStore((s) => s.error)
+
+  // Checked before the connection status, because a browser that cannot draw
+  // the room has a problem no amount of successful signalling will fix, and
+  // being told the channel is fine would only be confusing.
+  if (!WEBGL_AVAILABLE) {
+    return (
+      <div className="stage-overlay" role="status">
+        <div className="overlay-card">
+          <h2 className="is-warn">This browser will not give up a WebGL context</h2>
+          <p>
+            The API is there and the request for a context was refused, which usually means
+            hardware acceleration is switched off, the driver is on a blocklist, or an extension is
+            blocking canvas fingerprinting.
+          </p>
+          <p className="overlay-note">
+            Nothing else on this page needs it. Every measurement below is a recording played back
+            in SVG, so the whole argument still reads from here down.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   if (status === 'ready') return null
 
