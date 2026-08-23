@@ -49,6 +49,13 @@ export function useRoom(): void {
     let cancelled = false
 
     const counters = { out: 0, in: 0, bad: 0 }
+
+    // Per-sender arrival gaps, for the live inter-arrival readout. Keyed by
+    // sender because the gap between packets from three different people says
+    // nothing: the quantity that matters is how far apart one person's own
+    // updates land.
+    const lastFrom = new Map<string, number>()
+    let gaps: { at: number; ms: number }[] = []
     const lastSent = { x: NaN, z: NaN, ry: NaN, at: 0 }
 
     async function connect() {
@@ -87,8 +94,11 @@ export function useRoom(): void {
         })
         .on('presence', { event: 'leave' }, ({ key }) => {
           // Drop their snapshot history too, or a rejoin interpolates from
-          // wherever they were standing when they left.
+          // wherever they were standing when they left. Same for their last
+          // arrival time, or the first packet after a rejoin reports a gap of
+          // however long they were away.
           forgetPlayer(key)
+          lastFrom.delete(key)
         })
         .on('broadcast', { event: MOVE_EVENT }, ({ payload }) => {
           const move = parseMove(payload)
@@ -101,13 +111,25 @@ export function useRoom(): void {
           }
           if (move.id === me.id) return
           counters.in++
+
+          const now = performance.now()
+          const previous = lastFrom.get(move.id)
+          lastFrom.set(move.id, now)
+          // Anything over 400 ms is somebody who stopped walking, whose next
+          // packet is the two second keepalive rather than a movement update.
+          // Including those would report the room as four times slower than it
+          // is every time a person stands still.
+          if (previous !== undefined && now - previous <= 400) {
+            gaps.push({ at: now, ms: now - previous })
+          }
+
           bufferFor(move.id).push({
             x: move.x,
             z: move.z,
             ry: move.ry,
             // Our clock, not theirs. We never synchronise clocks between
             // browsers; we only replay what arrived, at the rate it arrived.
-            t: performance.now(),
+            t: now,
           })
         })
 
@@ -127,7 +149,12 @@ export function useRoom(): void {
 
       sendTimer = setInterval(() => sendMove(me.id), SEND_INTERVAL_MS)
       statsTimer = setInterval(() => {
-        useRoomStore.getState().setStats({ ...counters })
+        const cutoff = performance.now() - 5000
+        gaps = gaps.filter((g) => g.at >= cutoff)
+        const sorted = gaps.map((g) => g.ms).sort((a, b) => a - b)
+        const gapMs = sorted.length === 0 ? 0 : Math.round(sorted[Math.floor(sorted.length / 2)]!)
+
+        useRoomStore.getState().setStats({ ...counters, gapMs })
         counters.out = 0
         counters.in = 0
         counters.bad = 0

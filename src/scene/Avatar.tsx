@@ -23,7 +23,7 @@ export function Avatar({ colour, dim = false }: { colour: string; dim?: boolean 
       {/* Forward is +Z when rotation.y is zero. */}
       <mesh position={[0, 0.62, 0.42]} rotation={[Math.PI / 2, 0, 0]}>
         <coneGeometry args={[0.15, 0.32, 10]} />
-        <meshStandardMaterial color="#0a0e13" roughness={0.6} />
+        <meshStandardMaterial color="#04161a" roughness={0.6} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>

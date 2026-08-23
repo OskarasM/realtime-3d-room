@@ -1,30 +1,1321 @@
-@import 'tailwindcss';
+/* This site's own stylesheet.
+ *
+ * tokens.css carries the values, chrome.css carries the pieces the three sites
+ * share, and everything below is the part that only makes sense here: the
+ * stage, the time axis, the instrument panels over the canvas, and the four
+ * visualisations.
+ *
+ * Loaded after chrome.css so this file can override it.
+ */
 
-@layer base {
-  html,
-  body,
-  #root {
-    height: 100%;
-    margin: 0;
-    background: #0b0f14;
-    color-scheme: dark;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  /* Stops a phone treating a drag on the canvas as a page scroll. */
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+dl,
+dd,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.prose a,
+.source-line a,
+.panel-note a,
+.npm-note a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+/* One focus treatment, everywhere, and it is never removed. Two pixels of
+   accent at four pixels of offset clears every surface on the page. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+}
+
+code,
+.mono {
+  font-family: var(--font-chrome);
+  font-size: 0.92em;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: var(--track-display);
+}
+
+/* --------------------------------------------------------------------------
+   The stage: header, canvas, title band, three rows and two hairlines
+   -------------------------------------------------------------------------- */
+
+.stage {
+  height: 100dvh;
+  min-height: 620px;
+  display: grid;
+  grid-template-rows: auto minmax(280px, 1fr) auto;
+  border-bottom: 1px solid var(--line);
+}
+
+.stage-shell > * {
+  width: var(--container);
+  margin-inline: auto;
+}
+
+.stage-shell:first-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.stage-shell:last-child {
+  border-top: 1px solid var(--line);
+}
+
+.stage .site-header {
+  border-bottom: 0;
+}
+
+.stage-canvas {
+  position: relative;
+  min-height: 0;
+  background: var(--ground);
+}
+
+.stage-canvas > div:first-child,
+.stage-canvas canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* The wrapper ignores pointer events so dragging to orbit still works through
+   the gaps between the two panels. */
+.stage-panels {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-panel);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gutter);
+  padding: var(--gutter);
+  pointer-events: none;
+  /* The panels are as tall as their content; the canvas is only as tall as the
+     viewport leaves it. Clipping here rather than letting them spill keeps them
+     instruments over the scene instead of page furniture on the title band. */
+  overflow: hidden;
+}
+
+.panel {
+  width: 250px;
+  max-width: calc(50vw - var(--gutter) * 2);
+  pointer-events: auto;
+  max-height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.panel-head {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.panel-head h2 {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--ink);
+}
+
+.panel-toggle {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.panel-toggle:hover {
+  color: var(--ink);
+}
+
+.panel-count {
+  margin-left: auto;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--dim);
+}
+
+.status-dot.is-ready {
+  background: var(--accent);
+}
+.status-dot.is-full {
+  background: var(--series-c);
+}
+.status-dot.is-error {
+  background: var(--warn);
+}
+
+.roster {
+  padding: 6px 0;
+  font-size: var(--step-0);
+}
+
+.roster li {
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 var(--gutter);
+}
+
+.roster.is-scrolling {
+  max-height: 156px;
+  overflow-y: auto;
+}
+
+.swatch {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+}
+
+.roster-name {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.roster-you,
+.roster-when {
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+}
+
+.roster-empty {
+  color: var(--dim);
+}
+
+.panel-block {
+  padding: var(--gutter);
+  border-top: 1px solid var(--line);
+}
+
+.panel-error {
+  color: #ffcdb9;
+  font-size: var(--step-0);
+}
+
+.panel-note {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+
+.toggle {
+  width: 100%;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: var(--panel-raised);
+  color: var(--ink);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color var(--t) var(--ease);
+}
+
+.toggle:hover {
+  border-color: var(--muted);
+}
+
+.toggle-on {
+  color: var(--accent);
+}
+.toggle-off {
+  color: var(--warn);
+}
+
+.readout {
+  border-top: 1px solid var(--line);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fixed row height. These update once a second, and a panel that resizes when
+   a figure gains a digit reads as a web page rather than an instrument. */
+.readout-row {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 var(--gutter);
+  color: var(--dim);
+}
+
+.readout-row dd {
+  color: var(--ink);
+}
+
+.readout-row .is-warn {
+  color: var(--warn);
+}
+
+.stage-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 10, 16, 0.86);
+}
+
+.overlay-card {
+  max-width: 440px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.overlay-card h2 {
+  font-size: var(--step-2);
+}
+
+.overlay-card h2.is-warn {
+  color: var(--warn);
+}
+
+.overlay-card p {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: var(--step-1);
+  line-height: 1.55;
+}
+
+.overlay-note {
+  color: var(--dim) !important;
+  font-size: var(--step-0) !important;
+}
+
+/* --------------------------------------------------------------------------
+   The hero: the one voice moment
+   -------------------------------------------------------------------------- */
+
+.hero {
+  padding-block: 22px 26px;
+}
+
+.hero h1 {
+  margin-top: 12px;
+  max-width: 30ch;
+  font-size: var(--step-5);
+  text-wrap: balance;
+}
+
+/* The width axis, driven by measured packet arrival. Nothing else on this page
+   uses it, which is what makes it a moment rather than a texture. */
+.voice {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  /* No transition on the axis itself: this reports a measurement, and easing a
+     measurement between two values draws numbers that were never true. */
+}
+
+.hero-foot {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 30px;
+  align-items: start;
+}
+
+.hero-note {
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: var(--step-0);
+  line-height: 1.55;
+}
+
+.hero-readout {
+  min-height: 40px;
+  padding-left: var(--gutter);
+  border-left: 1px solid var(--line);
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  line-height: 1.55;
+}
+
+.scroll-cue {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-family: var(--font-chrome);
+  font-size: 12px;
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+  transition: transform var(--t) var(--ease);
+}
+
+.scroll-cue:hover {
+  transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   The time axis: this site's structural device
+   -------------------------------------------------------------------------- */
+
+.band {
+  padding-block: var(--pad-section);
+  border-bottom: 1px solid var(--line);
+}
+
+.band-shell {
+  width: var(--container);
+  margin-inline: auto;
+}
+
+.axis {
+  display: grid;
+  grid-template-columns: var(--axis-inset) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--gutter);
+  height: var(--tick);
+  margin-bottom: 34px;
+}
+
+.axis .section-number {
+  color: var(--accent);
+}
+
+/* The rule with marks standing on it. A repeating-linear-gradient with hard
+   stops is a ruler rather than a gradient: every stop is 1px of --line against
+   nothing, so what renders is a row of ticks, not a wash. */
+.axis-rule {
+  position: relative;
+  height: var(--tick);
+  background: repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 44px);
+}
+
+.axis-rule::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.band .section-heading {
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  gap: 60px;
+  margin-bottom: 46px;
+}
+
+.band h2 {
+  font-size: var(--step-4);
+  text-wrap: balance;
+}
+
+.band h3 {
+  font-size: var(--step-1);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.prose {
+  max-width: 72ch;
+  display: grid;
+  gap: 20px;
+  color: var(--muted);
+  font-size: var(--step-1);
+  line-height: 1.65;
+}
+
+.band-shell > * + .prose,
+.band-shell > .prose + * {
+  margin-top: var(--gap-prose);
+}
+
+.source-line {
+  margin-top: 30px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  line-height: 1.7;
+}
+
+/* --------------------------------------------------------------------------
+   The accent strip: punctuation, once
+   -------------------------------------------------------------------------- */
+
+.strip {
+  padding-block: 44px;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.strip p {
+  width: var(--container);
+  margin-inline: auto;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+}
+
+/* --------------------------------------------------------------------------
+   Pipeline: the chain
+   -------------------------------------------------------------------------- */
+
+.chain,
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 1px solid var(--line);
+}
+
+.steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.chain li,
+.steps li {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--pad-panel);
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.steps li {
+  min-height: 190px;
+}
+
+.chain li:last-child,
+.steps li:last-child {
+  border-right: 0;
+}
+
+.chain-at {
+  color: var(--accent);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+}
+
+.chain li p,
+.steps li p {
+  color: var(--muted);
+  font-size: var(--step-0);
+  line-height: 1.55;
+}
+
+.chain-file {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  min-height: 44px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  font-size: 10px;
+  overflow-wrap: anywhere;
+  transition: color var(--t) var(--ease);
+}
+
+.chain-file:hover {
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Presence: twelve calls, drawn to scale
+   -------------------------------------------------------------------------- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gutter) 30px;
+  margin-bottom: 30px;
+}
+
+.controls-note {
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+}
+
+.controls-buttons {
+  display: flex;
+  gap: var(--gutter);
+}
+
+.button {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--muted);
+}
+
+.button.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.probe {
+  border: 1px solid var(--line);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+}
+
+.probe-head,
+.probe-row {
+  display: grid;
+  grid-template-columns: 44px 84px minmax(0, 1fr) 76px;
+  align-items: center;
+  gap: var(--gutter);
+  padding: 0 var(--gutter);
+}
+
+.probe-head {
+  height: 44px;
+  border-bottom: 1px solid var(--line);
+  color: var(--dim);
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+}
+
+/* Fixed height, twelve of them, so the replay fills a shape that was already
+   there rather than growing the page as it plays. */
+.probe-row {
+  height: 34px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.probe-row:last-child {
+  border-bottom: 0;
+}
+
+.probe-row.is-pending {
+  color: var(--dim);
+  opacity: 0.4;
+}
+
+.probe-row.is-failed .probe-result {
+  color: var(--warn);
+}
+
+.probe-index {
+  color: var(--dim);
+}
+
+.probe-result {
+  color: var(--accent);
+}
+
+.probe-track {
+  height: 10px;
+  background: var(--panel);
+}
+
+.probe-bar {
+  display: block;
+  height: 100%;
+  min-width: 1px;
+  background: var(--accent);
+}
+
+.probe-row.is-failed .probe-bar {
+  background: var(--warn);
+}
+
+.probe-ms {
+  text-align: right;
+  color: var(--ink);
+}
+
+.findings {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--line);
+}
+
+.finding {
+  height: var(--row-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 var(--pad-panel);
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.finding:last-child {
+  border-right: 0;
+}
+
+.finding strong {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  color: var(--accent);
+}
+
+.finding.is-warn strong {
+  color: var(--warn);
+}
+
+.finding span {
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  font-size: 10px;
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   Interpolation: two panes, one buffer
+   -------------------------------------------------------------------------- */
+
+/* The room is square, so the panes are square, and two full-width squares
+   would be a metre of page for a comparison made in the first two seconds. The
+   controls take the space that leaves, which puts them where you are already
+   looking. */
+.lab {
+  display: grid;
+  grid-template-columns: minmax(0, 860px) minmax(240px, 1fr);
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 30px;
+}
+
+.panes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gutter);
+}
+
+.lab .controls {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 22px;
+  margin-bottom: 0;
+}
+
+.lab .slider {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.lab .slider input[type="range"] {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.pane {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.pane figcaption {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gutter);
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--line);
+}
+
+.pane-label {
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+}
+
+.pane.is-warn .pane-label {
+  color: var(--warn);
+}
+
+.pane.is-accent .pane-label {
+  color: var(--accent);
+}
+
+.pane-note {
+  color: var(--dim);
+  font-size: 11px;
+}
+
+.pane svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  background: var(--texture);
+}
+
+.pane-grid line {
+  stroke: var(--line);
+  stroke-width: 0.02;
+}
+
+.pane-trail {
+  fill: none;
+  stroke-width: 0.07;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.pane.is-warn .pane-trail {
+  stroke: rgba(255, 122, 69, 0.45);
+}
+
+.pane.is-accent .pane-trail {
+  stroke: rgba(53, 224, 240, 0.45);
+}
+
+.pane.is-warn .pane-marker circle {
+  fill: var(--warn);
+}
+
+.pane.is-accent .pane-marker circle {
+  fill: var(--accent);
+}
+
+.pane-heading {
+  fill: var(--ground);
+}
+
+.slider {
+  display: grid;
+  grid-template-columns: auto minmax(140px, 220px) auto;
+  align-items: center;
+  gap: var(--gutter);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.slider output {
+  min-width: 56px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.slider input[type="range"] {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* Four columns of tabular figures do not fit a 375px screen, and shrinking
+   them to fit would make the comparison unreadable. The table scrolls inside
+   its own box instead, so the page body never does. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 520px;
+  border: 1px solid var(--line);
+  border-collapse: collapse;
+  font-size: var(--step-0);
+}
+
+.data-table th,
+.data-table td {
+  height: var(--row-sm);
+  padding: 0 var(--pad-panel);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.data-table thead th {
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: var(--track-chrome);
+  text-transform: uppercase;
+}
+
+.data-table tbody th {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.data-table tbody tr:last-child th,
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table .num {
+  font-family: var(--font-chrome);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* The live column is the one the reader is meant to compare against; the two
+   measured columns beside it are the reference. */
+.data-table tbody td:first-of-type {
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Policy: two attacks and their literal responses
+   -------------------------------------------------------------------------- */
+
+.attacks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--line);
+}
+
+.attack {
+  display: grid;
+  align-content: start;
+  gap: var(--gutter);
+  padding: var(--pad-panel);
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.attack:last-child {
+  border-right: 0;
+}
+
+.attack p {
+  color: var(--muted);
+  font-size: var(--step-0);
+  line-height: 1.55;
+}
+
+.attack .button {
+  justify-self: start;
+}
+
+/* Fixed height whether or not it has run, so pressing a button does not shove
+   the rest of the section down the page. */
+.response {
+  min-height: 148px;
+  padding: var(--gutter);
+  border: 1px solid var(--line);
+  background: var(--ground);
+  font-family: var(--font-chrome);
+  font-size: var(--step--1);
+  color: var(--dim);
+}
+
+.response dl > div {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gutter);
+}
+
+.response dd {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.response .is-loud {
+  color: var(--warn);
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+
+.response-message {
+  height: auto !important;
+  display: grid !important;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.response-message dd {
+  color: var(--muted);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.quickstart-code {
+  margin-top: var(--gap-prose);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.quickstart-code pre {
+  margin: 0;
+  padding: var(--pad-panel);
+  overflow-x: auto;
+}
+
+.quickstart-code code {
+  font-size: var(--step-0);
+  line-height: 1.7;
+  color: var(--muted);
+  white-space: pre;
+}
+
+/* --------------------------------------------------------------------------
+   Run it
+   -------------------------------------------------------------------------- */
+
+.run-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  gap: var(--gutter);
+  align-items: start;
+}
+
+.run-commands {
+  display: grid;
+  align-content: start;
+  gap: var(--gutter);
+}
+
+.install-command code {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--pad-panel);
+  overflow-x: auto;
+  color: var(--ink);
+  font-size: var(--step-0);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Limits
+   -------------------------------------------------------------------------- */
+
+.limits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.limits article {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 230px;
+  padding: var(--pad-panel);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.limits p {
+  color: var(--muted);
+  font-size: var(--step-0);
+  line-height: 1.6;
+}
+
+.npm-note {
+  max-width: 72ch;
+  display: grid;
+  gap: 16px;
+  padding: var(--pad-panel);
+  border-left: 2px solid var(--accent);
+  background: var(--accent-wash);
+}
+
+.npm-note p {
+  color: var(--muted);
+  font-size: var(--step-1);
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.site-footer {
+  width: var(--container);
+  margin-inline: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Narrow
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .chain,
+  .limits {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  body {
-    font-family:
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      'Segoe UI',
-      Roboto,
-      sans-serif;
-    /* Stops a phone treating a drag on the canvas as a page scroll. */
-    overscroll-behavior: none;
-    -webkit-tap-highlight-color: transparent;
+  .chain li {
+    min-height: 200px;
+    border-bottom: 1px solid var(--line);
   }
 
-  canvas {
-    touch-action: none;
-    display: block;
+  .chain li:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .steps li:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .steps li:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .run-grid,
+  .lab {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lab .controls {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .band .section-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .hero-foot {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .hero-readout {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container: min(1180px, 100% - 32px);
+    --axis-inset: 88px;
+  }
+
+  .stage {
+    height: auto;
+    min-height: 0;
+  }
+
+  .stage-canvas {
+    height: 62vh;
+    min-height: 320px;
+  }
+
+  .site-header {
+    grid-template-columns: 1fr auto;
+    gap: var(--gutter);
+    padding-block: 12px;
+  }
+
+  .site-header nav {
+    order: 3;
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding-bottom: 6px;
+  }
+
+  .panel {
+    width: auto;
+    flex: 1 1 0;
+    max-width: none;
+  }
+
+  /* The room readout collapses to its header on a phone. Six live figures and
+     a roster over a 320px canvas would cover the thing they describe. */
+  .hud .roster,
+  .hud .panel-block,
+  .hud .readout {
+    display: none;
+  }
+
+  .hero-foot,
+  .panes,
+  .attacks,
+  .findings,
+  .chain,
+  .steps,
+  .limits {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chain li,
+  .steps li,
+  .attack,
+  .limits article,
+  .finding {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .finding {
+    height: var(--row-md);
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chain li:last-child,
+  .steps li:last-child,
+  .attack:last-child,
+  .finding:last-child {
+    border-bottom: 0;
+  }
+
+  .limits {
+    border-left: 0;
+    border-right: 1px solid var(--line);
+  }
+
+  .probe-head,
+  .probe-row {
+    grid-template-columns: 30px 62px minmax(0, 1fr) 60px;
+    gap: 8px;
+  }
+
+  .slider {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .slider input[type="range"] {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .site-footer {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: var(--gutter);
+    padding-block: 30px;
+  }
+
+  .strip p {
+    font-size: var(--step-2);
+  }
+}
+
+/* Motion here is content, so a reduced motion preference turns the replays
+   into things you start rather than removing them. The scroll behaviour is the
+   one thing that simply goes. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

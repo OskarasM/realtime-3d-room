@@ -1,0 +1,82 @@
+{
+  "recordedAt": "2026-08-22",
+  "note": "Twelve track() calls, 400 ms apart, on one client. The documented allowance is five per client per thirty seconds.",
+  "attempts": 12,
+  "ok": 5,
+  "firstFailureAt": 6,
+  "totalMs": 75090,
+  "calls": [
+    {
+      "call": 1,
+      "startedMs": 0,
+      "durationMs": 21,
+      "result": "ok"
+    },
+    {
+      "call": 2,
+      "startedMs": 424,
+      "durationMs": 20,
+      "result": "ok"
+    },
+    {
+      "call": 3,
+      "startedMs": 849,
+      "durationMs": 20,
+      "result": "ok"
+    },
+    {
+      "call": 4,
+      "startedMs": 1275,
+      "durationMs": 19,
+      "result": "ok"
+    },
+    {
+      "call": 5,
+      "startedMs": 1700,
+      "durationMs": 85,
+      "result": "ok"
+    },
+    {
+      "call": 6,
+      "startedMs": 2189,
+      "durationMs": 10009,
+      "result": "timed out"
+    },
+    {
+      "call": 7,
+      "startedMs": 12609,
+      "durationMs": 10003,
+      "result": "timed out"
+    },
+    {
+      "call": 8,
+      "startedMs": 23018,
+      "durationMs": 10004,
+      "result": "timed out"
+    },
+    {
+      "call": 9,
+      "startedMs": 33427,
+      "durationMs": 10015,
+      "result": "timed out"
+    },
+    {
+      "call": 10,
+      "startedMs": 43850,
+      "durationMs": 10002,
+      "result": "timed out"
+    },
+    {
+      "call": 11,
+      "startedMs": 54261,
+      "durationMs": 10009,
+      "result": "timed out"
+    },
+    {
+      "call": 12,
+      "startedMs": 64678,
+      "durationMs": 10003,
+      "result": "timed out"
+    }
+  ]
+}

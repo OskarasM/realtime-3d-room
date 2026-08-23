@@ -6,7 +6,7 @@ import { LocalPlayer, type TapTarget } from './LocalPlayer'
 import { RemotePlayer } from './RemotePlayer'
 import { useOccupants, useRoomStore } from '../state/useRoomStore'
 
-export function Room() {
+export function Room({ frameloop = 'always' }: { frameloop?: 'always' | 'never' }) {
   const me = useRoomStore((s) => s.me)
   const occupants = useOccupants()
   const [target, setTarget] = useState<TapTarget>(null)
@@ -16,6 +16,10 @@ export function Room() {
 
   return (
     <Canvas
+      // Paused once the stage has scrolled off screen. A WebGL scene that keeps
+      // drawing while nobody is looking at it is spending someone's battery to
+      // produce nothing, and this page argues about frame budget.
+      frameloop={frameloop}
       // Capping device pixel ratio is the single highest value line in this
       // file for mobile. A modern phone reports 3, which means rendering nine
       // times the pixels of a 1x buffer for a scene made of capsules.
@@ -25,8 +29,8 @@ export function Room() {
       performance={{ min: 0.5 }}
       camera={{ position: [0, 9, 11], fov: 46, near: 0.1, far: 90 }}
     >
-      <color attach="background" args={['#0b0f14']} />
-      <fog attach="fog" args={['#0b0f14', 16, 42]} />
+      <color attach="background" args={['#070a10']} />
+      <fog attach="fog" args={['#070a10', 16, 42]} />
 
       {/* No shadow maps anywhere. See Avatar for what stands in for them. */}
       <ambientLight intensity={0.75} />
@@ -68,7 +72,7 @@ function TapMarker({ x, z }: { x: number; z: number }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.03, z]}>
       <ringGeometry args={[0.22, 0.3, 24]} />
-      <meshBasicMaterial color="#7dd3fc" transparent opacity={0.8} depthWrite={false} />
+      <meshBasicMaterial color="#35e0f0" transparent opacity={0.8} depthWrite={false} />
     </mesh>
   )
 }

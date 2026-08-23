@@ -1,30 +1,46 @@
-import { Room } from './scene/Room'
-import { Hud } from './ui/Hud'
-import { Guestbook } from './ui/Guestbook'
-import { Overlay } from './ui/Overlay'
 import { useRoom } from './net/useRoom'
+import { SiteFooter } from './chrome'
+import { Strip } from './ui/Band'
+import { Stage } from './sections/Stage'
+import { Pipeline } from './sections/Pipeline'
+import { Presence } from './sections/Presence'
+import { Interpolation } from './sections/Interpolation'
+import { Policy } from './sections/Policy'
+import { Run } from './sections/Run'
+import { Limits } from './sections/Limits'
+import { BRAND, SIBLING_SITES } from './site'
 
+/**
+ * The page, in the order somebody meets it.
+ *
+ * The room is first and the explanation follows, rather than the other way
+ * round. Everything after the canvas works with no connection at all: the two
+ * sections that make measured claims replay committed recordings, so an
+ * employer opening this when the room is empty, or when the free project has
+ * been paused, still sees the entire argument.
+ */
 export default function App() {
   useRoom()
 
   return (
-    <main className="relative h-dvh w-screen overflow-hidden bg-[#0b0f14] text-slate-100">
-      <Room />
+    <>
+      <Stage />
 
-      {/* The HUD floats over the canvas. The wrapper ignores pointer events so
-          that dragging to orbit the camera still works through the gaps. */}
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-3 sm:p-4">
-        <div className="flex items-start justify-between gap-3">
-          <Hud />
-          <Guestbook />
-        </div>
+      <main id="main">
+        <Pipeline />
+        <Strip>Presence says who. Broadcast says where.</Strip>
+        <Presence />
+        <Interpolation />
+        <Policy />
+        <Run />
+        <Limits />
+      </main>
 
-        <p className="pointer-events-none mx-auto rounded-full bg-black/50 px-3 py-1.5 text-center text-[11px] text-slate-400 backdrop-blur-sm">
-          WASD or the arrow keys to move. Tap the floor on a phone. Drag to look around.
-        </p>
-      </div>
-
-      <Overlay />
-    </main>
+      <SiteFooter
+        name={BRAND}
+        blurb="A shared 3D room, and the measurements that decided its shape."
+        links={SIBLING_SITES}
+      />
+    </>
   )
 }

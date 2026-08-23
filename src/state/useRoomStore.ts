@@ -10,6 +10,12 @@ export type Stats = {
   in: number
   /** Inbound packets refused by parseMove in the last second. */
   bad: number
+  /**
+   * Median gap between two consecutive packets from the same sender, over the
+   * last five seconds. Zero until somebody else is moving. This is the same
+   * quantity the spike reports as inter-arrival p50, measured live.
+   */
+  gapMs: number
   fps: number
 }
 
@@ -36,7 +42,7 @@ export const useRoomStore = create<RoomState>((set) => ({
   me: null,
   roster: {},
   smoothing: true,
-  stats: { out: 0, in: 0, bad: 0, fps: 0 },
+  stats: { out: 0, in: 0, bad: 0, gapMs: 0, fps: 0 },
 
   setStatus: (status, error = null) => set({ status, error }),
   setMe: (me) => set({ me }),

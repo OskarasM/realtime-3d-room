@@ -1,0 +1,109 @@
+/* The instrument contract: shared token schema.
+   The same variable NAMES appear in three-dispose-guard and scene-narrator with
+   different values, so the three stylesheets are structurally identical and a
+   component can be lifted between them without rewiring. Copied into each repo
+   rather than published as a package: three copies of one small file are
+   cheaper than one package plus three build wirings. Revisit at four repos. */
+
+:root {
+  color-scheme: dark;
+
+  /* Surface. Every division on the page is one hairline of --line. */
+  --ground: #070a10;
+  --panel: #0d1219;
+  --panel-raised: #131b24;
+  --line: #1e2833;
+
+  /* Ink */
+  --ink: #e6f4f7;
+  --muted: #8aa0ad;
+  --dim: #6f8593;
+
+  /* Encoding. A hue may appear on the page only if it appears in a legend.
+     --accent is the packet that arrived on time. --warn is the failure this
+     project is about: a position drawn the instant it lands. */
+  --accent: #35e0f0;
+  --accent-ink: #04161a;
+  --accent-wash: rgba(53, 224, 240, 0.07);
+  --warn: #ff7a45;
+  --series-a: #35e0f0; /* interpolated, drawn 120 ms late */
+  --series-b: #ff7a45; /* raw, drawn on arrival */
+  --series-c: #7f9cff; /* the packet stream itself */
+
+  /* Type. Three registers, never anything between them: chrome is mono,
+     argument is body, display appears in h1 to h3 only. */
+  --font-chrome: "Commit Mono", "Commit Mono Fallback", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --font-body: "Atkinson Next", "Atkinson Next Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Anybody", "Anybody Fallback", ui-sans-serif, system-ui, sans-serif;
+
+  --step--1: 11px;
+  --step-0: 13px;
+  --step-1: clamp(17px, 1.7vw, 21px);
+  --step-2: clamp(21px, 2.2vw, 28px);
+  --step-3: clamp(28px, 3.6vw, 44px);
+  --step-4: clamp(32px, 3.9vw, 50px);
+  /* Anybody at its default 100% width is wider than Archivo, and the hero here
+     is a title band inside a fixed-height stage rather than a full-page poster,
+     so it has a hard ceiling: two lines at 1440px, three at 375px. Measured
+     against the real face, not guessed. */
+  --step-5: clamp(34px, 4vw, 54px);
+
+  --track-chrome: 0.11em;
+  --track-display: -0.03em;
+
+  /* Space. Two scales, never mixed. The test is whether the block contains a
+     number: numbers get --gutter, sentences get --gap-prose. */
+  --gutter: 12px;
+  --gap-prose: clamp(40px, 5vw, 100px);
+  --pad-section: clamp(76px, 9vw, 132px);
+  --pad-panel: 16px;
+  --container: min(1180px, 100% - 48px);
+
+  /* Rows. Fixed heights on anything that repeats or updates, so a live table
+     holds its grid instead of reflowing every tick. */
+  --row-sm: 56px;
+  --row-md: 58px;
+  --row-lg: 82px;
+  --row-bar: 78px;
+  --row-head: 76px;
+
+  /* Motion. One duration, one curve, one gesture. */
+  --t: 180ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Texture. One, at 2%, panel interiors only, never on prose. */
+  --texture: rgba(255, 255, 255, 0.02);
+
+  --z-canvas: 0;
+  --z-panel: 10;
+  --z-sticky: 20;
+  --z-overlay: 40;
+  --z-modal: 50;
+
+  /* Signal only. dispose-guard's device is a grid and the narrator's is a left
+     rail; this site's is a horizontal time axis, so it needs the two
+     measurements that axis is drawn from. Named here so no section invents its
+     own. */
+  --axis-inset: 118px; /* where the axis label column ends and the rule begins */
+  --tick: 9px; /* height of one mark standing on the axis */
+
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--ground);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scene motion and replay are content, so they are exempt from the 180ms rule
+   but not from this. The JS flag lets the canvas and the replays read the same
+   preference and turn autoplay into a play button. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

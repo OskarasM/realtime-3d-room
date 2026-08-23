@@ -12,7 +12,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -b --noEmit",
-    "spike": "tsx spike/rate-probe.ts"
+    "spike": "tsx spike/rate-probe.ts",
+    "record": "tsx spike/record-trace.ts",
+    "test:browser": "playwright test",
+    "check": "npm run typecheck && node scripts/check-prose.mjs && node scripts/check-font-budget.mjs && npm test && npm run build"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
@@ -24,17 +27,38 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^6.1.0",
     "dotenv": "^17.4.2",
-    "tailwindcss": "^4.3.3",
     "tsx": "^4.23.12",
     "typescript": "~5.9.3",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
-  }
+  },
+  "author": "Oskaras M",
+  "homepage": "https://realtime-3d-room.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OskarasM/realtime-3d-room.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OskarasM/realtime-3d-room/issues"
+  },
+  "keywords": [
+    "react-three-fiber",
+    "threejs",
+    "webgl",
+    "supabase",
+    "realtime",
+    "multiplayer",
+    "presence",
+    "interpolation",
+    "websockets",
+    "row-level-security"
+  ]
 }

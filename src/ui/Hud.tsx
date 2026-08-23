@@ -1,6 +1,18 @@
 import { useOccupants, useRoomStore } from '../state/useRoomStore'
 import { RENDER_DELAY_MS, ROOM_CAPACITY, TICK_HZ } from '../net/protocol'
 
+/**
+ * The instrument panel over the scene.
+ *
+ * Opaque, hairline bordered, square cornered. Not a glass panel: blurring the
+ * thing you are reading numbers off costs a compositing pass to make them
+ * harder to read, and a translucent readout over a moving 3D scene has no
+ * stable contrast ratio at all.
+ *
+ * Every row has a fixed height, because these figures update once a second and
+ * a panel that resizes when a number gains a digit reads as a web page rather
+ * than an instrument.
+ */
 export function Hud() {
   const me = useRoomStore((s) => s.me)
   const status = useRoomStore((s) => s.status)
@@ -10,67 +22,59 @@ export function Hud() {
   const occupants = useOccupants()
 
   return (
-    <div className="pointer-events-auto w-64 rounded-lg border border-white/10 bg-black/55 p-3 backdrop-blur-sm">
-      <div className="flex items-center gap-2">
-        <span
-          className={`size-2 rounded-full ${status === 'ready' ? 'bg-emerald-400' : status === 'full' ? 'bg-amber-400' : status === 'error' ? 'bg-rose-500' : 'bg-slate-500'}`}
-        />
-        <h1 className="text-xs font-medium tracking-wide text-slate-200 uppercase">
-          In the room
-        </h1>
-        <span className="ml-auto text-xs text-slate-400">
+    <section className="panel hud" aria-label="Room readout">
+      <header className="panel-head">
+        <span className={`status-dot is-${status}`} aria-hidden="true" />
+        <h2>In the room</h2>
+        <span className="panel-count">
           {occupants.length}/{ROOM_CAPACITY}
         </span>
-      </div>
+      </header>
 
-      <ul className="mt-2 space-y-1 text-xs">
+      <ul className="roster">
         {occupants.map((p) => (
-          <li key={p.id} className="flex items-center gap-2">
-            <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: p.colour }} />
-            <span className="truncate text-slate-200">{p.name}</span>
-            {p.id === me?.id ? <span className="ml-auto text-slate-500">you</span> : null}
+          <li key={p.id}>
+            <span className="swatch" style={{ backgroundColor: p.colour }} aria-hidden="true" />
+            <span className="roster-name">{p.name}</span>
+            {p.id === me?.id ? <span className="roster-you">you</span> : null}
           </li>
         ))}
-        {occupants.length === 0 ? <li className="text-slate-500">Just you, so far.</li> : null}
+        {occupants.length === 0 ? <li className="roster-empty">Just you, so far.</li> : null}
       </ul>
 
-      <hr className="my-3 border-white/10" />
+      <div className="panel-block">
+        <button className="toggle" type="button" onClick={toggleSmoothing} aria-pressed={smoothing}>
+          <span>Interpolation</span>
+          <span className={smoothing ? 'toggle-on' : 'toggle-off'}>{smoothing ? 'on' : 'off'}</span>
+        </button>
+        <p className="panel-note">
+          {smoothing
+            ? `Everyone else is drawn ${RENDER_DELAY_MS} ms in the past, between the two packets either side of that moment.`
+            : `Raw packets, no smoothing. This is what ${TICK_HZ} updates a second actually looks like.`}
+        </p>
+      </div>
 
-      <button
-        type="button"
-        onClick={toggleSmoothing}
-        aria-pressed={smoothing}
-        className="flex w-full items-center justify-between rounded border border-white/15 px-2 py-1.5 text-xs text-slate-200 hover:bg-white/5"
-      >
-        <span>Interpolation</span>
-        <span className={smoothing ? 'text-emerald-300' : 'text-rose-300'}>
-          {smoothing ? 'on' : 'off'}
-        </span>
-      </button>
-      <p className="mt-1.5 text-[11px] leading-snug text-slate-500">
-        {smoothing
-          ? `Everyone else is drawn ${RENDER_DELAY_MS} ms in the past, between the two packets either side of that moment.`
-          : `Raw packets, no smoothing. This is what ${TICK_HZ} updates a second actually looks like.`}
-      </p>
-
-      <hr className="my-3 border-white/10" />
-
-      <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-slate-400">
+      <dl className="readout">
         <Stat label="fps" value={stats.fps} />
         <Stat label="tick" value={`${TICK_HZ} Hz`} />
         <Stat label="out/s" value={stats.out} />
         <Stat label="in/s" value={stats.in} />
+        <Stat label="gap" value={stats.gapMs === 0 ? '--' : `${stats.gapMs} ms`} />
         <Stat label="delay" value={`${RENDER_DELAY_MS} ms`} />
+        {/* Only shown once it has happened. A permanent zero invites the reader
+            to wonder what is wrong with it; a number appearing means something
+            on the channel is sending packets this client will not accept. */}
+        {stats.bad > 0 ? <Stat label="refused" value={stats.bad} warn /> : null}
       </dl>
-    </div>
+    </section>
   )
 }
 
-function Stat({ label, value, tone }: { label: string; value: string | number; tone?: string }) {
+function Stat({ label, value, warn }: { label: string; value: string | number; warn?: boolean }) {
   return (
-    <div className="flex justify-between gap-2">
+    <div className="readout-row">
       <dt>{label}</dt>
-      <dd className={tone ?? 'text-slate-200'}>{value}</dd>
+      <dd className={warn ? 'is-warn' : undefined}>{value}</dd>
     </div>
   )
 }

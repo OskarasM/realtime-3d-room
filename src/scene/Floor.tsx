@@ -23,7 +23,7 @@ export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} onPointerDown={handle}>
         <planeGeometry args={[ROOM_HALF * 2, ROOM_HALF * 2]} />
-        <meshStandardMaterial color="#151b23" roughness={0.95} metalness={0} />
+        <meshStandardMaterial color="#121b26" roughness={0.95} metalness={0} />
       </mesh>
 
       <Grid
@@ -31,10 +31,10 @@ export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
         position={[0, 0.005, 0]}
         cellSize={1}
         cellThickness={0.6}
-        cellColor="#2a3542"
+        cellColor="#263646"
         sectionSize={3}
         sectionThickness={1.1}
-        sectionColor="#3d5a72"
+        sectionColor="#3c6472"
         fadeDistance={30}
         fadeStrength={1}
         infiniteGrid={false}
@@ -50,7 +50,7 @@ export function Floor({ onTap }: { onTap: (x: number, z: number) => void }) {
       ).map(([x, z, w, d], i) => (
         <mesh key={i} position={[x, WALL_H / 2, z]}>
           <boxGeometry args={[w, WALL_H, d]} />
-          <meshStandardMaterial color="#2b3a4d" roughness={0.7} />
+          <meshStandardMaterial color="#1b2733" roughness={0.7} />
         </mesh>
       ))}
     </group>

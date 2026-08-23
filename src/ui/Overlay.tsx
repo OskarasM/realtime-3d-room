@@ -7,6 +7,10 @@ import { ROOM_CAPACITY } from '../net/protocol'
  * A stranger opening the deployed URL should never see a blank canvas and have
  * to open the console to find out why, and somebody who has just cloned this
  * should be told exactly which setting they have not turned on yet.
+ *
+ * It covers the canvas and nothing else. The rest of the page keeps working
+ * with no connection at all, which is the point: every measured claim below is
+ * a recording, so the argument survives a paused free project.
  */
 export function Overlay() {
   const status = useRoomStore((s) => s.status)
@@ -15,28 +19,30 @@ export function Overlay() {
   if (status === 'ready') return null
 
   return (
-    <div className="pointer-events-auto absolute inset-0 z-20 grid place-items-center bg-black/70 p-6 backdrop-blur-sm">
-      <div className="max-w-md rounded-xl border border-white/10 bg-slate-950/90 p-6 text-center">
+    <div className="stage-overlay" role="status">
+      <div className="overlay-card">
         {status === 'error' ? (
           <>
-            <h2 className="text-lg font-medium text-rose-300">The room would not open</h2>
-            <p className="mt-2 text-sm break-words text-slate-300">{error}</p>
+            <h2 className="is-warn">The room would not open</h2>
+            <p>{error}</p>
+            <p className="overlay-note">
+              Everything below this canvas still works. The measurements further down the page are
+              recordings, not live calls.
+            </p>
           </>
         ) : status === 'full' ? (
           <>
-            <h2 className="text-lg font-medium text-amber-300">The room is full</h2>
-            <p className="mt-2 text-sm text-slate-300">
-              {ROOM_CAPACITY} people is the cap, and it is not arbitrary: the Supabase free
-              plan allows 100 messages a second across the whole project, and everyone in
-              here sends 10 a second. You will be let in as soon as somebody leaves.
+            <h2>The room is full</h2>
+            <p>
+              {ROOM_CAPACITY} people is the cap, and it is not arbitrary: the Supabase free plan
+              allows 100 messages a second across the whole project, and everyone in here sends 10 a
+              second. You will be let in as soon as somebody leaves.
             </p>
           </>
         ) : (
           <>
-            <h2 className="text-lg font-medium text-slate-200">Opening the room</h2>
-            <p className="mt-2 text-sm text-slate-400">
-              Signing you in anonymously and joining the channel.
-            </p>
+            <h2>Opening the room</h2>
+            <p>Signing you in anonymously and joining the channel.</p>
           </>
         )}
       </div>

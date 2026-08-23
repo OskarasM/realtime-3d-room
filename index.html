@@ -3,15 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#070a10" />
     <meta name="color-scheme" content="dark" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Realtime 3D Room</title>
+
+    <title>realtime-3d-room: eight people in a shared 3D room, 120 ms apart</title>
     <meta
       name="description"
-      content="A shared 3D room built with React Three Fiber and Supabase Realtime. Open it in two windows and watch yourself move."
+      content="A shared 3D room on Supabase Realtime. Presence says who is here; broadcast says where they are, ten times a second. Everyone else is drawn 120 ms in the past, and the page shows the measurements that decided why."
     />
+    <link rel="canonical" href="https://realtime-3d-room.vercel.app/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://realtime-3d-room.vercel.app/" />
+    <meta property="og:site_name" content="realtime-3d-room" />
+    <meta property="og:title" content="realtime-3d-room: eight people in a shared 3D room, 120 ms apart" />
+    <meta
+      property="og:description"
+      content="Presence says who. Broadcast says where. Walk in, open a second window, and read the packet arrival times that decided the architecture."
+    />
+    <meta property="og:image" content="https://realtime-3d-room.vercel.app/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="realtime-3d-room, a shared 3D room built with React Three Fiber and Supabase Realtime."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- Only the display face is preloaded: it sets the largest text above the
+         fold, so it is the swap a visitor actually sees. Body and chrome arrive
+         with the stylesheet and their metric-matched fallbacks hold the layout
+         still in the meantime. -->
+    <link rel="preload" href="/fonts/anybody-var.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
