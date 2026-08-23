@@ -61,43 +61,17 @@
 
 .brand-mark {
   width: 26px;
-  height: 24px;
-  position: relative;
+  height: 26px;
   flex: 0 0 auto;
-}
-
-/* The favicon, in CSS: a solid core, a rule, and an open core a fixed distance
-   behind it. Same three shapes as public/favicon.svg, same stroke ratio. */
-.brand-mark::before,
-.brand-mark::after,
-.brand-mark span {
-  content: "";
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.brand-mark::before {
-  left: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
   background: var(--accent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cpath%20d%3D%22M%2012%2032%20H%2039%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2232%22%20r%3D%228%22%20fill%3D%22%23000%22%2F%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2232%22%20r%3D%228%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%224%22%2F%3E%3C%2Fsvg%3E") no-repeat center / contain;
+  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cpath%20d%3D%22M%2012%2032%20H%2039%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2232%22%20r%3D%228%22%20fill%3D%22%23000%22%2F%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2232%22%20r%3D%228%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%224%22%2F%3E%3C%2Fsvg%3E") no-repeat center / contain;
 }
 
+/* The span is the third shape in the CSS drawing this replaced. The mask now
+   carries all three, so it has nothing left to draw. */
 .brand-mark span {
-  left: 5px;
-  width: 13px;
-  height: 1px;
-  background: var(--line);
-}
-
-.brand-mark::after {
-  right: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 1px solid var(--muted);
+  display: none;
 }
 
 .site-header nav {
