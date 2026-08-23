@@ -1,4 +1,6 @@
-# Realtime 3D room
+<img src="public/favicon.svg" alt="" width="52" height="52" />
+
+# realtime-3d-room
 
 A shared 3D room. Open the URL, you are in it. Open it again in a second window
 and there are two of you, moving in real time.
@@ -9,7 +11,24 @@ and a Row Level Security policy is all that protects it.
 
 **[Live demo](https://realtime-3d-room.vercel.app)** . **[The interpolation code](src/net/interpolation.ts)** . **[The spike](spike/RESULTS.md)**
 
-The demo is two browser windows side by side. That is genuinely all it is.
+The demo is two browser windows side by side. That is genuinely all it is, and
+the site under the canvas walks through the measurements that decided the shape
+of it. Every section of that page works with no connection at all, because an
+empty room and a paused free project are both ordinary states for it to be in.
+
+## This one is not on npm, and should not be
+
+Its two siblings are libraries and both publish. This is an application, and it
+has no importable surface: there is no component you could mount in your own
+project without also adopting a Supabase channel, a Zustand store and a room.
+Publishing it would be publishing a folder.
+
+The two parts that are genuinely reusable are
+[`src/net/interpolation.ts`](src/net/interpolation.ts), the snapshot buffer, and
+[`spike/rate-probe.ts`](spike/rate-probe.ts), the measurement harness. Between
+them they are about two hundred lines, and they are two hundred lines you should
+read and adapt rather than depend on. A dependency you would have to read anyway
+is worse than a file you copied and understood.
 
 ---
 
@@ -62,11 +81,19 @@ If something is missing, the app tells you which step you skipped rather than
 showing a black screen.
 
 ```bash
-npm run dev        # develop
-npm test           # the interpolation suite
-npm run spike      # measure your own project
-npm run build      # production build
+npm run dev           # develop
+npm test              # unit suite: interpolation, packet validation, replay
+npm run test:browser  # Playwright, including axe at WCAG 2 A and AA
+npm run check         # typecheck, prose, font budget, unit tests, build
+npm run spike         # measure your own project
+npm run record        # rewrite the two recordings the site replays
+npm run build         # production build
 ```
+
+`npm run spike` and `npm run record` both point at whatever is in your `.env`
+and both send a lot of messages on purpose, so use a project you do not mind
+rate limiting. The spike takes a couple of minutes; the recorder takes about
+two, most of it sitting in a presence timeout deliberately.
 
 ---
 
@@ -391,10 +418,37 @@ This is a presence demo, not a game engine. Cut on purpose:
 
 ## Stack
 
-React 19, TypeScript, Vite, React Three Fiber, drei, Zustand, Tailwind 4,
-Vitest, Supabase (Realtime, anonymous Auth, Postgres with RLS), deployed on
-Vercel.
+React 19, TypeScript, Vite, React Three Fiber, drei, Zustand, Vitest,
+Playwright with axe, Supabase (Realtime, anonymous Auth, Postgres with RLS),
+deployed on Vercel.
+
+No CSS framework. The site is one token file, one shared chrome stylesheet and
+one of its own, which between them are smaller than the utility classes they
+replaced. Type is four self-hosted subset faces at 103.6 kB, checked against a
+150 kB ceiling in CI, and never fetched from a font CDN: a page that argues
+about what arrives over the wire should be able to account for all of it.
 
 ## Licence
 
 MIT. Clone it, point it at your own Supabase project, take it somewhere.
+
+---
+
+## Related
+
+Three repositories, one design system, three different hard parts of production
+WebGL.
+
+- [three-dispose-guard](https://github.com/OskarasM/three-dispose-guard) - GPU
+  resource ownership and lifetime. Collection is not disposal, and unmount is not
+  ownership. [Site](https://three-dispose-guard.vercel.app)
+- [scene-narrator](https://github.com/OskarasM/scene-narrator) - accessibility
+  under continuous motion. What a screen reader gets from a moving 3D scene, which
+  is otherwise nothing. [Site](https://scene-narrator-inky.vercel.app)
+
+## Type licensing
+
+The four faces in [`public/fonts`](public/fonts) are SIL Open Font License 1.1
+and their licence text ships beside them: Commit Mono, Atkinson Hyperlegible
+Next and Anybody. They are subset to latin and to the axis ranges this site
+actually sets.
