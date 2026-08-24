@@ -4,6 +4,18 @@ All notable changes are documented here. This is an application rather than a
 package, so there is nothing published to version. Dates are when the change
 reached `main`.
 
+## 2026-08-24
+
+### Fixed
+
+- The instrument panels came off the page's left margin on any machine that
+  will not give up a WebGL context. The stylesheet sized the canvas wrapper by
+  matching `div:first-child`, which is only the canvas wrapper while a canvas
+  exists; with none, the panels became the first child and inherited a
+  full-bleed width. The wrapper is named now, and the no-WebGL path has its own
+  test in every browser rather than being covered only where CI happens to lack
+  a context.
+
 ## 2026-08-23, later
 
 ### Added

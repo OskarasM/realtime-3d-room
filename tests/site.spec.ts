@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 /**
  * Every assertion here has to hold whether or not a Supabase project is
@@ -261,15 +261,45 @@ test('the room says how to use it, on the room', async ({ page }) => {
   await expect(strip.getByText('W', { exact: true })).toBeVisible()
   await expect(strip.getByRole('button', { name: /open a second window/i })).toBeVisible()
 
-  // The strip has to sit on the page's own left margin, like everything else.
-  // Both instrument panels were inset from the canvas edge instead, which put
-  // them a few pixels off every other vertical line on the page.
+  await expectOneLeftEdge(page)
+})
+
+/** Every vertical on the stage sits on the page's own margin, or none of it
+ *  does. Read one at a time these are four separate positions to get wrong. */
+async function expectOneLeftEdge(page: Page) {
   const edges = await page.evaluate(() =>
     ['.site-header', '.hud', '.controls-strip', '.hero h1'].map(
       (selector) => Math.round(document.querySelector(selector)!.getBoundingClientRect().left),
     ),
   )
   expect(new Set(edges).size, `left edges disagree: ${edges.join(', ')}`).toBe(1)
+}
+
+/**
+ * The same page on a machine that will not give up a WebGL context.
+ *
+ * Worth its own test rather than leaving it to whichever CI browser happens to
+ * lack one. The canvas wrapper was matched as div:first-child, which is only
+ * the canvas wrapper while a canvas exists: with none, the instrument panels
+ * became the first child, inherited a full-bleed width and came off the page's
+ * margin. That reached CI because the only browser exercising this path was the
+ * one nobody was looking at.
+ */
+test('the stage still lines up when WebGL is refused', async ({ page }) => {
+  await page.addInitScript(() => {
+    const real = HTMLCanvasElement.prototype.getContext
+    HTMLCanvasElement.prototype.getContext = function (type: string, ...rest: unknown[]) {
+      if (typeof type === 'string' && type.includes('webgl')) return null
+      return (real as (...args: unknown[]) => unknown).call(this, type, ...rest)
+    } as typeof real
+  })
+
+  await page.goto('/')
+  await page.evaluate(() => document.fonts.ready)
+
+  await expect(page.getByRole('heading', { name: /will not give up a WebGL context/i })).toBeVisible()
+  await expect(page.locator('.stage-canvas canvas')).toHaveCount(0)
+  await expectOneLeftEdge(page)
 })
 
 test('the stage fits the viewport and the readout is not clipped', async ({ page }) => {

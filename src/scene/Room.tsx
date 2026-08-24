@@ -22,6 +22,12 @@ export function Room({ frameloop = 'always' }: { frameloop?: 'always' | 'never' 
 
   return (
     <Canvas
+      // Named so the stylesheet can size the wrapper React Three Fiber puts
+      // around the canvas. It used to be matched as div:first-child, which is
+      // only the canvas wrapper while there is a canvas: on a machine with no
+      // WebGL the instrument panels became the first child and inherited a
+      // full-bleed width that knocked them off the page's own margin.
+      className="stage-gl"
       // Paused once the stage has scrolled off screen. A WebGL scene that keeps
       // drawing while nobody is looking at it is spending someone's battery to
       // produce nothing, and this page argues about frame budget.

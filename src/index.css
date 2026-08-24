@@ -115,7 +115,7 @@ h3 {
   background: var(--ground);
 }
 
-.stage-canvas > div:first-child,
+.stage-canvas > .stage-gl,
 .stage-canvas canvas {
   position: absolute;
   inset: 0;
