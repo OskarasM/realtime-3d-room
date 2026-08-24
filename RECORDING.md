@@ -132,3 +132,48 @@ left window is unmistakable.
 Drop section 2 entirely and shorten section 5 to the button click alone. Keep
 sections 3 and 4 whole. The presence limit and the interpolation toggle are the
 only parts of this that nobody else's demo has.
+
+---
+
+## An unfinished performance thread, recorded rather than dropped
+
+Lighthouse on the deployed site reports performance in the low 80s against 95
+and 96 for the two sibling projects, and the cause is one thing: the 910 kB
+React Three Fiber chunk is a static dependency of the entry, so the browser
+fetches and parses the whole renderer before it paints anything.
+
+`src/scene/Room.tsx` is lazily imported, and that is correct: it produces its
+own chunk and the build lists r3f as that chunk's dependency. It is also
+statically reachable, and that is the part not yet solved. The entry chunk
+imports two bindings from the r3f chunk. One of them is React's JSX factory,
+identified by reading the minified chunk: it has the shape of
+`react/jsx-runtime`, which every component in the entry calls.
+
+Naming chunks explicitly fixed this twice and then stopped working:
+
+| Attempt | Result |
+|---|---|
+| Give React its own chunk | Entry chunk 237 kB to 59 kB. r3f still preloaded. |
+| Move zustand in with React | No change. R3F uses zustand, but that was not the edge. |
+| Route every unmatched node_modules id to a vendor chunk | No change at all, byte-identical output. |
+| Match `jsx-runtime` by name, first rule | No change at all, byte-identical output. |
+
+The last two producing byte-identical output is the useful signal: the id that
+`manualChunks` receives for the automatic JSX runtime does not contain
+`jsx-runtime` or `node_modules`, so no rule written against the id string can
+reach it. It is likely a virtual module id injected by the React plugin.
+
+What is committed is the part that is proven: the React chunk, which is a real
+reduction in the entry, and the lazy scene, which is correct on its own terms
+and which the browser suite now covers properly. What is not committed is four
+rounds of guessing that changed nothing.
+
+The next thing to try is `experimental.renderBuiltUrl` or dropping
+`manualChunks` entirely and letting the automatic dynamic-import split do the
+work, measured rather than assumed. Whoever picks this up: the check is one
+line, and it is the only check that matters.
+
+    grep -o '<link[^>]*modulepreload[^>]*>' dist/index.html
+
+If `r3f` appears in that output, the scene is still in front of first paint,
+whatever the chunk listing says.
