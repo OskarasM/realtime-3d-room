@@ -19,6 +19,17 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
+          // React first, and named explicitly.
+          //
+          // Without this line React has no chunk of its own, so the bundler
+          // put it wherever it liked, which was inside the r3f chunk because
+          // r3f imports it. That made a 910 kB chunk a static dependency of
+          // the entry: the scene was lazily imported and the browser fetched
+          // and parsed all of Three.js before first paint anyway, because
+          // React was hiding in there. The build output looked split and was
+          // not.
+          if (id.includes('node_modules/react')) return 'react'
+          if (id.includes('node_modules/scheduler')) return 'react'
           if (id.includes('node_modules/three')) return 'three'
           if (id.includes('@react-three')) return 'r3f'
           if (id.includes('@supabase')) return 'supabase'

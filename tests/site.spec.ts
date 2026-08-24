@@ -42,6 +42,7 @@ test('@smoke the page loads and every section is present with or without a conne
  */
 test('the stage shows the room, or says why it cannot', async ({ page }) => {
   await page.goto('/')
+  await settleStage(page)
 
   const canvas = page.locator('.stage-canvas canvas')
   const refused = page.getByRole('heading', { name: /will not give up a WebGL context/i })
@@ -266,6 +267,28 @@ test('the room says how to use it, on the room', async ({ page }) => {
 
 /** Every vertical on the stage sits on the page's own margin, or none of it
  *  does. Read one at a time these are four separate positions to get wrong. */
+/**
+ * Wait for the stage to resolve one way or the other.
+ *
+ * The room is in a lazily imported chunk, so between first paint and the chunk
+ * arriving the stage holds neither a canvas nor the refusal notice. Without
+ * this, a test that asks "is there a canvas?" straight after goto reads the gap
+ * as "this browser has no WebGL" and then fails looking for a notice that is
+ * correctly absent.
+ */
+async function settleStage(page: Page) {
+  // Race the two real outcomes rather than anything that merely looks like
+  // one. The overlay card is not a proxy for "no WebGL": it also carries the
+  // booting and unconfigured states, so waiting on it returned instantly and
+  // left this exactly where it started.
+  await Promise.race([
+    page.locator('.stage-canvas canvas').first().waitFor({ state: 'attached', timeout: 15_000 }),
+    page
+      .getByRole('heading', { name: /will not give up a WebGL context/i })
+      .waitFor({ state: 'attached', timeout: 15_000 }),
+  ]).catch(() => {})
+}
+
 async function expectOneLeftEdge(page: Page) {
   const edges = await page.evaluate(() =>
     ['.site-header', '.hud', '.controls-strip', '.hero h1'].map(

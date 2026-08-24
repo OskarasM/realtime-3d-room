@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
-import { Room } from '../scene/Room'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { WEBGL_AVAILABLE } from '../scene/webgl'
 import { Hud } from '../ui/Hud'
 import { Guestbook } from '../ui/Guestbook'
@@ -22,7 +21,15 @@ import { BRAND, NAV, REPO_URL } from '../site'
  * over the canvas, because they are readouts of the scene rather than page
  * furniture, and they are opaque with a hairline border rather than blurred
  * glass.
+ *
+ * The room itself arrives in its own chunk. Three.js and React Three Fiber are
+ * about a megabyte, and while they were in the entry chunk the browser had to
+ * parse all of it before it painted anything at all, including the header, the
+ * readouts and the title. Now the instrument frame paints first and the scene
+ * fills in behind it, which is a better order to meet this page in: you see
+ * what you are about to be standing in before you are standing in it.
  */
+const Room = lazy(() => import('../scene/Room').then((m) => ({ default: m.Room })))
 export function Stage() {
   const ref = useRef<HTMLElement>(null)
   const [running, setRunning] = useState(true)
@@ -47,7 +54,11 @@ export function Stage() {
       </div>
 
       <div className="stage-canvas">
-        {WEBGL_AVAILABLE ? <Room frameloop={running ? 'always' : 'never'} /> : null}
+        {WEBGL_AVAILABLE ? (
+          <Suspense fallback={null}>
+            <Room frameloop={running ? 'always' : 'never'} />
+          </Suspense>
+        ) : null}
 
         <div className="stage-panels">
           <Hud />
