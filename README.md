@@ -11,6 +11,9 @@ and a Row Level Security policy is all that protects it.
 
 **[Live demo](https://realtime-3d-room.vercel.app)** . **[The interpolation code](src/net/interpolation.ts)** . **[The spike](spike/RESULTS.md)**
 
+[![CI](https://github.com/OskarasM/realtime-3d-room/actions/workflows/ci.yml/badge.svg)](https://github.com/OskarasM/realtime-3d-room/actions/workflows/ci.yml)
+[![licence](https://img.shields.io/badge/licence-MIT-35e0f0)](LICENSE)
+
 The demo is two browser windows side by side. That is genuinely all it is, and
 the site under the canvas walks through the measurements that decided the shape
 of it. Every section of that page works with no connection at all, because an
