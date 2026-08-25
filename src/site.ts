@@ -17,7 +17,7 @@ export const NAV = [
 
 export const SIBLING_SITES = [
   { href: 'https://three-dispose-guard.vercel.app', label: 'three-dispose-guard' },
-  { href: 'https://scene-narrator-inky.vercel.app', label: 'scene-narrator' },
+  { href: 'https://scene-narrator-demo.vercel.app', label: 'scene-narrator' },
 ] as const
 
 /**

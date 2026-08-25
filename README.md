@@ -444,7 +444,7 @@ WebGL.
   ownership. [Site](https://three-dispose-guard.vercel.app)
 - [scene-narrator](https://github.com/OskarasM/scene-narrator) - accessibility
   under continuous motion. What a screen reader gets from a moving 3D scene, which
-  is otherwise nothing. [Site](https://scene-narrator-inky.vercel.app)
+  is otherwise nothing. [Site](https://scene-narrator-demo.vercel.app)
 
 ## Type licensing
 
