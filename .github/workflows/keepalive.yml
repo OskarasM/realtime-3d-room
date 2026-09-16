@@ -1,0 +1,22 @@
+name: keepalive
+
+# The free Supabase plan pauses a project after 7 days without activity, and a
+# paused project's hostname stops resolving, which takes the live room down.
+# One real database read every three days keeps it awake. The URL and the
+# publishable key are already public in the deployed bundle, so nothing here is
+# a secret. If this job fails, the project is probably already paused: unpause
+# it from the Supabase dashboard.
+
+on:
+  schedule:
+    - cron: "17 6 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: >
+          curl --fail --silent --show-error --retry 3 --max-time 30
+          "https://omruyjpwovxxgmtruzdw.supabase.co/rest/v1/guestbook?select=*&limit=1"
+          -H "apikey: sb_publishable__91y5gZxccKn_2YSc_4V4w_vRk545BN"
