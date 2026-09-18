@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "repos": {
+    "realtime-3d-room": {
+      "claude": "local-only",
+      "delivery": "pr",
+      "reason": "Owner decision #3: public repository"
+    }
+  }
+}
