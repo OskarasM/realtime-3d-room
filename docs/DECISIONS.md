@@ -32,7 +32,7 @@ Rows dated before 2026-09-17 index choices already written in this repository (c
 |---|---|---|---|
 | 2026-08-23 | This is an application, not a package; it is not published to npm and has no importable surface beyond two files meant to be copied and read, not depended on. | Accepted | README "This one is not on npm, and should not be". |
 | 2026-08-23 | Tailwind removed in favour of a plain stylesheet (zero border radius, one hairline, fixed row heights). | Implemented | CHANGELOG.md 2026-08-23 "Removed"; CONTRIBUTING.md "The design rule". |
-| 2026-08-23 | `src/tokens.css`, `src/chrome.css` and the chrome layout are copied, not packaged, across three sibling repositories; a change lands in all three or none. | Deferred | CONTRIBUTING.md "The design rule"; revisit if a fourth sibling appears (pattern shared with three-dispose-guard's token-schema decision). |
+| 2026-08-23 | `src/tokens.css`, `src/chrome.css` and the chrome layout are copied, not packaged, across three sibling repositories; a change lands in all three or none. | Deferred | CONTRIBUTING.md "The design rule"; revisit if a fourth sibling appears. |
 | 2026-08-23 | Documentation and code comments use British English and plain ASCII, enforced by `scripts/check-prose.mjs`. | Implemented | `npm run check`; CONTRIBUTING.md closing line. |
 | n/a | `.github/workflows/keepalive.yml` reads the guestbook every three days to stop the free Supabase project pausing. | Implemented | Commit "Keep the free Supabase project awake with a read every three days" (09a73ac, 2026-09-16). |
 

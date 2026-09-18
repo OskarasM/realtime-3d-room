@@ -26,8 +26,8 @@ Max 3 items.
 
 ## Last verified
 
-2026-09-17T20:27Z: `npm ci`, `npm run check`, `node C:/Users/om117/projects/agent-setup/check.mjs --repo-id realtime-3d-room .` - all pass (35 unit tests; typecheck, prose and font-budget clean; production build succeeds with the pre-existing chunk-size warning noted above).
+2026-09-17T20:27Z: `npm ci`, `npm run check`, `node .github/agent-setup/check.mjs --repo-id realtime-3d-room .` - all pass (35 unit tests; typecheck, prose and font-budget clean; production build succeeds with the pre-existing chunk-size warning noted above).
 
 - Revision: 09a73ac (clean worktree of origin/main), repeated on the setup branch.
 - Working directory: repository root.
-- Evidence: `C:/Users/om117/worktrees/_rollout-evidence/realtime-3d-room/EVIDENCE.md`; pull request CI run for the setup branch.
+- Evidence: pull request CI run for the setup branch.
