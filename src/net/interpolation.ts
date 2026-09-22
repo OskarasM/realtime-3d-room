@@ -79,7 +79,7 @@ export class SnapshotBuffer {
     const newest = buf[buf.length - 1]!
     // Render time has run past our newest packet: the sender stopped moving, or
     // the connection hiccuped. Hold the last known pose rather than extrapolating.
-    // ponytail: freezing is honest and cannot overshoot. Add dead reckoning
+    // Note: freezing is honest and cannot overshoot. Add dead reckoning
     // (project forward along the last velocity) only if the stall becomes visible.
     if (renderTime >= newest.t) return flat(newest)
 
