@@ -12,7 +12,7 @@ Maintained application. Deployed to Vercel from `main` at 09a73ac (2026-09-16); 
 
 Max 3 items.
 
-- [ ] Review the agent setup pull request (AGENTS.md contract, vendored contract checker in CI, project docs) - gives every agent the same rules and a checked definition of done - branch `chore/agent-setup`, draft PR.
+- [ ] Review the project setup pull request (AGENTS.md contract, vendored contract checker in CI, project docs) - gives every contributor the same rules and a checked definition of done - draft PR.
 
 ## Blockers
 
@@ -26,7 +26,7 @@ Max 3 items.
 
 ## Last verified
 
-2026-09-17T20:27Z: `npm ci`, `npm run check`, `node .github/agent-setup/check.mjs --repo-id realtime-3d-room .` - all pass (35 unit tests; typecheck, prose and font-budget clean; production build succeeds with the pre-existing chunk-size warning noted above).
+2026-09-17T20:27Z: `npm ci`, `npm run check`, `node .github/project-check/check.mjs --repo-id realtime-3d-room .` - all pass (35 unit tests; typecheck, prose and font-budget clean; production build succeeds with the pre-existing chunk-size warning noted above).
 
 - Revision: 09a73ac (clean worktree of origin/main), repeated on the setup branch.
 - Working directory: repository root.

@@ -30,8 +30,8 @@ jobs:
 
       - run: npm run build
 
-      - name: Agent contract check
-        run: node .github/agent-setup/check.mjs --ci --repo-id realtime-3d-room .
+      - name: Project contract check
+        run: node .github/project-check/check.mjs --ci --repo-id realtime-3d-room .
 
   # Deliberately given no Supabase configuration. That is the state the deployed
   # site is in whenever the free project is paused, and every section below the

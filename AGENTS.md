@@ -1,6 +1,6 @@
 # realtime-3d-room
 
-Shared instructions for Codex, Claude Code and other repository agents. Current user instructions override these repository defaults. Observed code, configuration and verified live state override stale descriptions; reconcile the documents when they disagree.
+Shared project instructions for contributors and coding tools. Current user instructions override these repository defaults. Observed code, configuration and verified live state override stale descriptions; reconcile the documents when they disagree.
 
 ## Product
 
@@ -30,7 +30,7 @@ Run from the repository root; package.json scripts are the source of truth. Veri
 - Browser tests (install once: `npx playwright install chromium firefox webkit`): `npm run test:browser`
 - Aggregate gate: `npm run check` (typecheck, prose, font budget, unit tests, build)
 - Measurement scripts, against your own Supabase project in `.env`: `npm run spike`, `npm run record`
-- Agent contract check (vendored, see `.github/agent-setup/SOURCE.md`): `node .github/agent-setup/check.mjs --ci --repo-id realtime-3d-room .`
+- Project contract check (vendored, see `.github/project-check/SOURCE.md`): `node .github/project-check/check.mjs --ci --repo-id realtime-3d-room .`
 
 ## Conventions
 
@@ -39,7 +39,7 @@ Run from the repository root; package.json scripts are the source of truth. Veri
 - No number belongs in the README or the site unless a committed script produced it (CONTRIBUTING.md "measurement rule"); rerun `npm run spike`/`npm run record` and update the prose together when a rerun changes a headline figure.
 - `src/tokens.css` and `src/chrome.css` are copied identically across three sibling repositories; change all three or none (CONTRIBUTING.md "design rule").
 - Documentation and code comments use British English and plain ASCII (no smart quotes, en or em dashes, or the ellipsis character); `node scripts/check-prose.mjs` enforces it.
-- No co-author or AI attribution trailers in commits.
+- No co-author trailers in commits.
 - Never edit: `dist/`, `node_modules/`.
 
 ## Project docs
@@ -66,7 +66,7 @@ Work is done only when these pass, run in this order, output read. `npm run chec
 - Browser-visible, WebGL or demo change: also `npm run test:browser`.
 - Before opening a pull request (CONTRIBUTING.md): also `npm run test:browser`.
 - Changing a headline number: rerun `npm run spike`/`npm run record` from your own Supabase project and update the prose in the same change; `tests/site.spec.ts` asserts some of these values.
-- Docs-only change: prose check, links, consistency with package.json scripts and CI, `git diff --check`, and the agent contract check.
+- Docs-only change: prose check, links, consistency with package.json scripts and CI, `git diff --check`, and the project contract check.
 - Update only project docs whose facts changed: `docs/STATE.md` (Now, blockers, Last verified, Updated date), `docs/DECISIONS.md` (new or changed decisions with reason), `docs/ROADMAP.md` (items moved or added), a `CHANGELOG.md` entry for user-visible changes.
 - Report which checks ran and their result. Never skip, weaken, or delete a check to make it pass.
 

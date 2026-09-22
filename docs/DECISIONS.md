@@ -36,12 +36,11 @@ Rows dated before 2026-09-17 index choices already written in this repository (c
 | 2026-08-23 | Documentation and code comments use British English and plain ASCII, enforced by `scripts/check-prose.mjs`. | Implemented | `npm run check`; CONTRIBUTING.md closing line. |
 | n/a | `.github/workflows/keepalive.yml` reads the guestbook every three days to stop the free Supabase project pausing. | Implemented | Commit "Keep the free Supabase project awake with a read every three days" (09a73ac, 2026-09-16). |
 
-## Agent setup
+## Project setup
 
 | Date | Decision | Status | Reason / evidence |
 |---|---|---|---|
-| 2026-09-17 | AGENTS.md is the shared agent contract (seven sections, checked in CI by a vendored checker in `.github/agent-setup/`); docs/STATE.md, docs/ROADMAP.md and this file hold current state, plan and decisions; CHANGELOG.md stays the change history. | Accepted (owner) | Owner-approved setup pattern (decision #3, 2026-09-14); checker source and hashes in `.github/agent-setup/SOURCE.md`. |
-| 2026-09-17 | CLAUDE.md is local-only in this public repository (excluded via `.git/info/exclude`); CI does not require it. | Accepted (owner) | Owner decision #3, 2026-09-14, for public repositories. |
+| 2026-09-17 | AGENTS.md is the shared project contract (seven sections, checked in CI by a vendored checker in `.github/project-check/`); docs/STATE.md, docs/ROADMAP.md and this file hold current state, plan and decisions; CHANGELOG.md stays the change history. | Accepted (owner) | Owner-approved setup pattern (decision #3, 2026-09-14); checker source and hashes in `.github/project-check/SOURCE.md`. |
 | 2026-09-17 | The vendored `repo-policies.json` holds only this repository's own entry, filtered from the owner's private mapping. | Accepted (owner) | Owner decision, 2026-09-17; the source file otherwise names private repositories. |
-| 2026-09-17 | The contract check runs as a step in the existing `check` CI job instead of a new job. | Accepted (agent proposal) | This repository has no branch-protection required checks configured today; the step still exercises the checker on every push and pull request without adding a job. |
-| 2026-09-17 | `scripts/check-prose.mjs` skips the `agent-setup` directory. | Accepted (agent proposal) | The vendored checker must stay byte-identical to its source hash and contains an American spelling that this repository's prose rule would otherwise flag. |
+| 2026-09-17 | The contract check runs as a step in the existing `check` CI job instead of a new job. | Accepted (proposal) | This repository has no branch-protection required checks configured today; the step still exercises the checker on every push and pull request without adding a job. |
+| 2026-09-17 | `scripts/check-prose.mjs` skips the `project-check` directory. | Accepted (proposal) | The vendored checker must stay byte-identical to its source hash and contains an American spelling that this repository's prose rule would otherwise flag. |

@@ -227,7 +227,7 @@ export function useRoom(): void {
 
       // Ordered by join time, so the room fills first come first served rather
       // than by whoever happens to reconnect fastest.
-      // ponytail: joinedAt is each client's own Date.now(), so a badly set
+      // Note: joinedAt is each client's own Date.now(), so a badly set
       // clock could jump the queue. Fair ordering needs a server timestamp,
       // which needs a server. Not worth it for a lobby of eight.
       const order = Object.values(roster).sort((a, b) => a.joinedAt - b.joinedAt)
